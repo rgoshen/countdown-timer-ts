@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import './App.css';
 import CountdownDisplay from './components/CountdownDisplay';
 import { useTicker } from './hooks/useTicker';
@@ -8,6 +8,11 @@ import { isFutureDate, isValidDateString, toInputLocal } from './lib/time';
 export default function App() {
   const [targetValue, setTargetValue] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const active = Boolean(targetValue) && !error;
   const nowMs = useTicker(active);
@@ -42,7 +47,24 @@ export default function App() {
 
   return (
     <div className='App'>
-      <h1>Countdown Timer</h1>
+      <div style={{ position: 'absolute', top: 20, right: 20 }}>
+        <button 
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          style={{ 
+            background: 'rgba(255,255,255,0.2)', 
+            border: 'none', 
+            borderRadius: '50%', 
+            width: 50, 
+            height: 50, 
+            fontSize: '1.5rem',
+            cursor: 'pointer'
+          }}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+      </div>
+      
+      <h1>⏰ Countdown Timer</h1>
 
       <div className='controls'>
         <input
@@ -53,7 +75,7 @@ export default function App() {
           aria-label='Choose future date and time'
         />
         <button className='secondary' onClick={reset} disabled={!targetValue}>
-          Reset
+          🔄 Reset
         </button>
       </div>
 
