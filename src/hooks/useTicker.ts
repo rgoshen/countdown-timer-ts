@@ -17,7 +17,11 @@ export function useTicker(active: boolean): number {
 
     // Align the first tick
     timer = setTimeout(schedule, nextTickDelay(Date.now()));
-    return () => timer && clearTimeout(timer);
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [active]);
 
   return now;

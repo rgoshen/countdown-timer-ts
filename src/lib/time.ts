@@ -1,4 +1,4 @@
-import { TimeLeft } from '../types/time';
+import type { TimeLeft } from '../types/time';
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
@@ -45,11 +45,16 @@ export function diffToTimeLeft(diffMs: number): TimeLeft {
   return { weeks, days, hours, minutes, seconds };
 }
 
-export function formatTwoDigits(
-  left: TimeLeft,
-): TimeLeft & { hours: string; minutes: string; seconds: string } {
+export function formatTwoDigits(left: TimeLeft): {
+  weeks: number;
+  days: number;
+  hours: string;
+  minutes: string;
+  seconds: string;
+} {
   return {
-    ...left,
+    weeks: left.weeks,
+    days: left.days,
     hours: pad2(left.hours),
     minutes: pad2(left.minutes),
     seconds: pad2(left.seconds),

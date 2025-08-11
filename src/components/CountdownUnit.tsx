@@ -1,7 +1,6 @@
-import React from 'react';
 import { usePrevious } from '../hooks/usePrevious';
 
-type Props = { label: string; value: number | string };
+type Props = { readonly label: string; readonly value: number | string };
 
 export default function CountdownUnit({ label, value }: Props) {
   const prev = usePrevious(value);

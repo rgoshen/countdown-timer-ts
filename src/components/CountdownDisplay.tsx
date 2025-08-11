@@ -1,9 +1,8 @@
-import React from 'react';
 import CountdownUnit from './CountdownUnit';
-import { TimeLeft } from '../types/time';
+import type { TimeLeft } from '../types/time';
 import { formatTwoDigits } from '../lib/time';
 
-type Props = { timeLeft: TimeLeft };
+type Props = Readonly<{ timeLeft: TimeLeft }>;
 
 export default function CountdownDisplay({ timeLeft }: Props) {
   const padded = formatTwoDigits(timeLeft);
