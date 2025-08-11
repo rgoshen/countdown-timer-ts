@@ -1,69 +1,71 @@
-# React + TypeScript + Vite
+# Countdown Timer (TypeScript + React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modular, TypeScript React app that validates a future date/time and shows a precise, animated countdown to the second.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Future-only validation (blocks past dates)
+- Weeks · Days · Hours · Minutes · Seconds
+- Smooth flip/fade animation on value change
+- Accessible: `aria-live` announcements, clear error messages
+- DRY utilities and SOLID-oriented modular design (hooks, lib, components, types)
 
-## Expanding the ESLint configuration
+## Tech
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React + TypeScript (Vite)
+- ESLint + Prettier (recommended)
+- Vitest + @testing-library/react (optional for tests)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Architecture
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- `components/` — pure UI: `CountdownDisplay`, `CountdownUnit`
+- `hooks/` — logic hooks:
+  - `useTicker` (S)ingle responsibility: emits aligned 1s ticks
+  - `useCountdown` derives countdown state from target + time
+  - `usePrevious` re-triggers animations on value change
+- `lib/` — pure functions: time math, formatting, validation
+- `types/` — domain types (`TimeLeft`)
+- `App.tsx` — composition & minimal state (targetValue, error)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### SOLID & DRY in practice
+
+- **S**RP: Each hook/component has one purpose.
+- **O**CP: Time utilities are extendable without modifying callers.
+- **L**SP: Components accept stable, substitutable props.
+- **I**SP: Small focused interfaces/types.
+- **D**IP: UI depends on abstractions (`lib/time`) not concrete date math.
+- **DRY**: Shared logic (formatting, math, validation) centralized in `lib/`.
+
+## Getting Started
+
+```bash
+npm create vite@latest countdown-timer-ts -- --template react-ts
+cd countdown-timer-ts
+npm i
+# drop the provided src/ files into place (replace scaffolded ones)
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open `http://localhost:5173` and select a future local date/time.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Testing
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+You can run tests using Vitest:
+
+```bash
+npm run test
 ```
+
+## Linting & Formatting
+
+To lint and format your code, run:
+
+```bash
+npm run lint
+npm run format
+```
+
+## Notes
+
+- The `<input type="datetime-local">` interprets values in the user’s local timezone.
+- The ticker is aligned to the next whole second for stable updates.
