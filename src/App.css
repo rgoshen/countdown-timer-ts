@@ -151,3 +151,51 @@ button.secondary:disabled {
   color: var(--text-muted);
   font-size: 0.95rem;
 }
+
+
+/* DateTimePicker styles */
+.dtp {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+.dtp-row {
+  display: grid;
+  gap: 6px;
+}
+.dtp-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.dtp-input {
+  padding: 10px 12px;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  outline: none;
+}
+.dtp-input:focus-visible,
+.dtp-select:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.dtp-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dtp-select {
+  padding: 10px 12px;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.dtp-colon {
+  color: var(--text-muted);
+  font-weight: 600;
+}

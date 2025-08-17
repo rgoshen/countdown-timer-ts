@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import "./App.css";
 import ThemeToggle from "./components/ThemeToggle";
 import CountdownDisplay from "./components/CountdownDisplay";
+import DateTimePicker from "./components/DateTimePicker";
 import { useTicker } from "./hooks/useTicker";
 import { useCountdown } from "./hooks/useCountdown";
 import { isFutureDate, isValidDateString, toInputLocal } from "./lib/time";
@@ -9,6 +10,7 @@ import { isFutureDate, isValidDateString, toInputLocal } from "./lib/time";
 export default function App() {
   const [targetValue, setTargetValue] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [timeFormat, setTimeFormat] = useState<"24h"|"12h">(() => (localStorage.getItem("time-format") === "12h" ? "12h" : "24h"));
 
   const active = Boolean(targetValue) && !error;
   const nowMs = useTicker(active);
@@ -20,8 +22,7 @@ export default function App() {
 
   const { timeLeft, finished } = useCountdown(targetMs, nowMs);
 
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const value = e.target.value;
+  const handleChange = (value: string) => {
     if (!isValidDateString(value)) {
       setError("Please enter a valid date and time.");
       setTargetValue("");
@@ -50,13 +51,7 @@ export default function App() {
       </div>
 
       <div className="controls">
-        <input
-          type="datetime-local"
-          value={targetValue}
-          onChange={handleChange}
-          min={toInputLocal(new Date())}
-          aria-label="Choose future date and time"
-        />
+        <DateTimePicker value={targetValue} onChange={handleChange as any} min={toInputLocal(new Date())} />
         <button className="secondary" onClick={reset} disabled={!targetValue}>
           Reset
         </button>
