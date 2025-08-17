@@ -39,7 +39,6 @@ export default function DateTimePicker({ value, onChange, min, format = "24h", o
   const [date, setDate] = useState<string>(base.d);
   const [h24, setH24] = useState<string>(base.h24);
   const [mm, setMm] = useState<string>(base.m);
-  const [ss, setSs] = useState<string>(base.s);
   const disp = toDisplayHour(parseInt(base.h24, 10) || 0);
   const [h12, setH12] = useState<string>(disp.h12);
   const [meridiem, setMeridiem] = useState<"AM"|"PM">(disp.meridiem);
@@ -49,16 +48,28 @@ export default function DateTimePicker({ value, onChange, min, format = "24h", o
     setH24(base.h24);
     const d = toDisplayHour(parseInt(base.h24, 10) || 0);
     setH12(d.h12); setMeridiem(d.meridiem);
-    setMm(base.m); setSs(base.s);
-  }, [base.d, base.h24, base.m, base.s]);
+    setMm(base.m);
+  }, [base.d, base.h24, base.m]);
+  // Sync hour representations when format changes so UI immediately reflects the same canonical hour
+  useEffect(() => {
+    const current24 = format === "12h"
+      ? fromDisplayHour(h12, meridiem)
+      : Math.max(0, Math.min(23, parseInt(h24, 10) || 0));
+    const hh = String(current24).padStart(2, "0");
+    if (h24 !== hh) setH24(hh);
+    const dispNow = toDisplayHour(current24);
+    if (h12 !== dispNow.h12) setH12(dispNow.h12);
+    if (meridiem !== dispNow.meridiem) setMeridiem(dispNow.meridiem);
+  }, [format]);  // sync hour on format change
+
 
   useEffect(() => {
     if (!date) return;
     const hour = format === "12h" ? fromDisplayHour(h12, meridiem) : Math.max(0, Math.min(23, parseInt(h24, 10) || 0));
     const hhStr = String(hour).padStart(2, "0");
-    const next = `${date}T${hhStr}:${mm.padStart(2, "0")}:${ss.padStart(2, "0")}`;
+    const next = `${date}T${hhStr}:${mm.padStart(2, "0")}:00`;
     onChange(next);
-  }, [date, h24, h12, meridiem, mm, ss, format, onChange]);
+  }, [date, h24, h12, meridiem, mm, format, onChange]);
 
   const minDate = min ? (min.split("T")[0] ?? "") : "";
 
@@ -82,19 +93,17 @@ export default function DateTimePicker({ value, onChange, min, format = "24h", o
                 <select aria-label="Hours" value={h12} onChange={(e) => setH12(e.target.value.padStart(2, "0"))} className="dtp-select">
                   {Array.from({ length: 12 }).map((_, i) => { const val = i === 0 ? 12 : i; const v = String(val).padStart(2, "0"); return <option key={v} value={v}>{v}</option>; })}
                 </select>
-                <select aria-label="AM/PM" value={meridiem} onChange={(e) => setMeridiem(e.target.value as "AM"|"PM")} className="dtp-select">
-                  <option value="AM">AM</option><option value="PM">PM</option>
-                </select>
               </>
             )}
             <span className="dtp-colon">:</span>
             <select aria-label="Minutes" value={mm} onChange={(e) => setMm(e.target.value.padStart(2, "0"))} className="dtp-select">
               {Array.from({ length: 60 }).map((_, i) => { const v = String(i).padStart(2, "0"); return <option key={v} value={v}>{v}</option>; })}
             </select>
-            <span className="dtp-colon">:</span>
-            <select aria-label="Seconds" value={ss} onChange={(e) => setSs(e.target.value.padStart(2, "0"))} className="dtp-select">
-              {Array.from({ length: 60 }).map((_, i) => { const v = String(i).padStart(2, "0"); return <option key={v} value={v}>{v}</option>; })}
-            </select>
+            {format === "12h" && (
+              <select aria-label="AM/PM" value={meridiem} onChange={(e) => setMeridiem(e.target.value as "AM"|"PM")} className="dtp-select">
+                <option value="AM">AM</option><option value="PM">PM</option>
+              </select>
+            )}
           </div>
 
           <div className="format-toggle small" role="group" aria-label="Time format inside picker">
