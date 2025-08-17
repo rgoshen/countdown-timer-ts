@@ -64,3 +64,9 @@ MIT
 
 ## Theme toggle
 Use the selector at the top to switch **System / Light / Dark**. Your choice is saved to `localStorage` and, when set to **System**, the UI follows your OS preference dynamically.
+
+
+## Persistence
+- Selected datetime is saved as `countdown-target` in `localStorage` and restored on reload.
+- Theme mode is saved as `theme-mode` and time format as `time-format`, both persisted in `localStorage`.
+- If the saved datetime is now in the past, the app displays a gentle warning prompting you to pick a new future time.

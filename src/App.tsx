@@ -8,7 +8,10 @@ import { useCountdown } from "./hooks/useCountdown";
 import { isFutureDate, isValidDateString, toInputLocal } from "./lib/time";
 
 export default function App() {
-  const [targetValue, setTargetValue] = useState<string>("");
+  const TARGET_KEY = "countdown-target";
+  const [targetValue, setTargetValue] = useState<string>(() => {
+    try { return localStorage.getItem(TARGET_KEY) ?? ""; } catch { return ""; }
+  });
   const [error, setError] = useState<string>("");
   const [timeFormat, setTimeFormat] = useState<"24h"|"12h">(() => (localStorage.getItem("time-format") === "12h" ? "12h" : "24h"));
 
@@ -37,9 +40,27 @@ export default function App() {
     setTargetValue(value);
   };
 
+  // Persist targetValue whenever it changes
+  React.useEffect(() => {
+    try {
+      if (targetValue) localStorage.setItem(TARGET_KEY, targetValue);
+      else localStorage.removeItem(TARGET_KEY);
+    } catch {}
+  }, [targetValue]);
+
+  // If a saved time is now invalid/past, show a friendly message
+  React.useEffect(() => {
+    if (targetValue && (!isValidDateString(targetValue) || !isFutureDate(targetValue))) {
+      setError("Saved date/time is in the past. Please pick a new future time.");
+    }
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const reset = () => {
     setTargetValue("");
     setError("");
+    try { localStorage.removeItem(TARGET_KEY); } catch {}
   };
 
   return (
