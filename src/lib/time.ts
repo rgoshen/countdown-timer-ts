@@ -28,9 +28,7 @@ export function nextTickDelay(nowMs: number): number {
 }
 
 export function diffToTimeLeft(diffMs: number): TimeLeft {
-  if (diffMs <= 0) {
-    return { weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
-  }
+  if (diffMs <= 0) return { weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
   const totalSeconds = Math.floor(diffMs / 1000);
   const seconds = totalSeconds % 60;
   const totalMinutes = Math.floor(totalSeconds / 60);

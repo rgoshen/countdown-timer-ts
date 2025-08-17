@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import "./App.css";
 import ThemeToggle from "./components/ThemeToggle";
 import CountdownDisplay from "./components/CountdownDisplay";
@@ -13,7 +13,9 @@ export default function App() {
     try { return localStorage.getItem(TARGET_KEY) ?? ""; } catch { return ""; }
   });
   const [error, setError] = useState<string>("");
-  const [timeFormat, setTimeFormat] = useState<"24h"|"12h">(() => (localStorage.getItem("time-format") === "12h" ? "12h" : "24h"));
+  const [timeFormat, setTimeFormat] = useState<"24h" | "12h">(
+    () => (localStorage.getItem("time-format") === "12h" ? "12h" : "24h")
+  );
 
   const active = Boolean(targetValue) && !error;
   const nowMs = useTicker(active);
@@ -40,20 +42,17 @@ export default function App() {
     setTargetValue(value);
   };
 
-  // Persist targetValue whenever it changes
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       if (targetValue) localStorage.setItem(TARGET_KEY, targetValue);
       else localStorage.removeItem(TARGET_KEY);
     } catch {}
   }, [targetValue]);
 
-  // If a saved time is now invalid/past, show a friendly message
-  React.useEffect(() => {
+  useEffect(() => {
     if (targetValue && (!isValidDateString(targetValue) || !isFutureDate(targetValue))) {
       setError("Saved date/time is in the past. Please pick a new future time.");
     }
-    // run once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -67,30 +66,30 @@ export default function App() {
     <div className="App">
       <h1>Countdown Timer</h1>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 8, flexWrap: "wrap" }}>
         <ThemeToggle />
       </div>
 
       <div className="controls">
-        <DateTimePicker value={targetValue} onChange={handleChange as any} min={toInputLocal(new Date())} />
-        <button className="secondary" onClick={reset} disabled={!targetValue}>
-          Reset
-        </button>
+        <DateTimePicker
+          value={targetValue}
+          onChange={handleChange}
+          min={toInputLocal(new Date())}
+          format={timeFormat}
+          onFormatChange={(f) => {
+            setTimeFormat(f);
+            try { localStorage.setItem("time-format", f); } catch {}
+          }}
+        />
+        <button className="secondary" onClick={reset} disabled={!targetValue}>Reset</button>
       </div>
 
       {error && <p className="error" role="alert">{error}</p>}
 
-      {!error && targetValue && timeLeft && !finished && (
-        <CountdownDisplay timeLeft={timeLeft} />
-      )}
+      {!error && targetValue && timeLeft && !finished && <CountdownDisplay timeLeft={timeLeft} />}
+      {!error && finished && <h2 className="done" aria-live="polite">Time’s up! 🎉</h2>}
 
-      {!error && finished && (
-        <h2 className="done" aria-live="polite">Time’s up! 🎉</h2>
-      )}
-
-      <p className="hint">
-        Pick any future local date/time. We block past dates—time travel’s still in beta.
-      </p>
+      <p className="hint">Pick any future local date/time. We block past dates—time travel’s still in beta.</p>
     </div>
   );
 }
