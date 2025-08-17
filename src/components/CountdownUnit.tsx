@@ -1,17 +1,18 @@
-import { usePrevious } from '../hooks/usePrevious';
+import React from "react";
+import { usePrevious } from "../hooks/usePrevious";
 
-type Props = { readonly label: string; readonly value: number | string };
+type Props = { label: string; value: number | string };
 
 export default function CountdownUnit({ label, value }: Props) {
   const prev = usePrevious(value);
   const changed = prev !== undefined && prev !== value;
 
   return (
-    <div className='unit'>
-      <div className={`value ${changed ? 'flip' : ''}`} key={String(value)}>
+    <div className="unit">
+      <div className={`value ${changed ? "flip" : ""}`} key={String(value)}>
         {value}
       </div>
-      <div className='label'>{label}</div>
+      <div className="label">{label}</div>
     </div>
   );
 }

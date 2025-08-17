@@ -1,9 +1,9 @@
-import type { TimeLeft } from '../types/time';
+import { TimeLeft } from "../types/time";
 
-const pad2 = (n: number) => String(n).padStart(2, '0');
+const pad2 = (n: number) => String(n).padStart(2, "0");
 
 export function toInputLocal(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, '0');
+  const p = (n: number) => String(n).padStart(2, "0");
   const yyyy = d.getFullYear();
   const mm = p(d.getMonth() + 1);
   const dd = p(d.getDate());
@@ -18,8 +18,7 @@ export function isValidDateString(value: string): boolean {
 }
 
 export function isFutureDate(value: string | Date): boolean {
-  const t =
-    typeof value === 'string' ? new Date(value).getTime() : value.getTime();
+  const t = typeof value === "string" ? new Date(value).getTime() : value.getTime();
   return t > Date.now();
 }
 
@@ -41,20 +40,12 @@ export function diffToTimeLeft(diffMs: number): TimeLeft {
   const totalDays = Math.floor(totalHours / 24);
   const weeks = Math.floor(totalDays / 7);
   const days = totalDays % 7;
-
   return { weeks, days, hours, minutes, seconds };
 }
 
-export function formatTwoDigits(left: TimeLeft): {
-  weeks: number;
-  days: number;
-  hours: string;
-  minutes: string;
-  seconds: string;
-} {
+export function formatTwoDigits(left: TimeLeft): TimeLeft & { hours: string; minutes: string; seconds: string } {
   return {
-    weeks: left.weeks,
-    days: left.days,
+    ...left,
     hours: pad2(left.hours),
     minutes: pad2(left.minutes),
     seconds: pad2(left.seconds),

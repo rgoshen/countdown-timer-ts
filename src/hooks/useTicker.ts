@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { nextTickDelay } from '../lib/time';
+import { useEffect, useState } from "react";
+import { nextTickDelay } from "../lib/time";
 
 /** SRP: Emits a now() timestamp aligned to whole seconds. */
 export function useTicker(active: boolean): number {
@@ -15,13 +15,8 @@ export function useTicker(active: boolean): number {
       timer = setTimeout(schedule, nextTickDelay(n));
     };
 
-    // Align the first tick
     timer = setTimeout(schedule, nextTickDelay(Date.now()));
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
+    return () => timer && clearTimeout(timer);
   }, [active]);
 
   return now;

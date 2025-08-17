@@ -1,35 +1,5 @@
-:root {
-  font-family: system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-}
-
-body {
+html, body, #root {
+  height: 100%;
   margin: 0;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  transition: all 0.3s ease;
-}
-
-[data-theme="light"] body {
-  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
-  color: #2d3436;
-}
-
-[data-theme="light"] h1 {
-  color: white !important;
-}
-
-[data-theme="light"] .label {
-  color: rgba(255,255,255,0.9) !important;
-}
-
-[data-theme="light"] .hint {
-  color: rgba(255,255,255,0.8) !important;
-}
-
-* {
-  box-sizing: border-box;
+  background: #0f1116;
 }
