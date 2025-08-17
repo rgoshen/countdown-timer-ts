@@ -73,7 +73,6 @@ h1 { margin: 0 0 10px; letter-spacing: 0.3px; font-weight: 750; color: var(--tex
 @media (prefers-reduced-motion: reduce) { .value.flip { animation: none; } }
 .label { font-size: 0.92rem; color: var(--text-muted); }
 
-/* DateTimePicker styles */
 .dtp { display: grid; gap: 8px; text-align: left; }
 .dtp-row { display: grid; gap: 6px; }
 .dtp-label { font-size: 0.85rem; color: var(--text-muted); }
@@ -89,7 +88,6 @@ h1 { margin: 0 0 10px; letter-spacing: 0.3px; font-weight: 750; color: var(--tex
 .dtp-colon { color: var(--text-muted); font-weight: 600; }
 .dtp-inline { display: inline-flex; align-items: center; gap: 10px; }
 
-/* Segmented time-format toggle */
 .format-toggle {
   display: inline-flex;
   border: 1px solid var(--border);

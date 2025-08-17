@@ -10,24 +10,22 @@ describe("App integration", () => {
   });
   afterEach(() => { vi.useRealTimers(); });
 
-  it("validates and counts down; reset clears persistence", async () => {
+  it("validates and counts down; reset clears persistence and UI", async () => {
     render(<App />);
     const date = screen.getByLabelText(/select date/i) as HTMLInputElement;
     const h = screen.getByLabelText(/hours/i) as HTMLSelectElement;
     const m = screen.getByLabelText(/minutes/i) as HTMLSelectElement;
-    
+
     // Past date -> error
     fireEvent.change(date, { target: { value: "2029-12-31" } });
     fireEvent.change(h, { target: { value: "23" } });
     fireEvent.change(m, { target: { value: "59" } });
-    
     expect(await screen.findByRole("alert")).toHaveTextContent(/future date/);
 
     // Valid future
     fireEvent.change(date, { target: { value: "2030-01-01" } });
     fireEvent.change(h, { target: { value: "12" } });
     fireEvent.change(m, { target: { value: "01" } });
-    
     expect(screen.queryByRole("alert")).toBeNull();
     expect(screen.getByText("Seconds")).toBeInTheDocument();
 

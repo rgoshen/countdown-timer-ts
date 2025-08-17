@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export type ThemeMode = "light" | "dark" | "system";
 type Resolved = "light" | "dark";
-
 type Ctx = { mode: ThemeMode; setMode: (m: ThemeMode) => void; computed: Resolved; };
 
 const ThemeContext = createContext<Ctx | null>(null);
@@ -30,10 +29,7 @@ export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) =
   useEffect(() => {
     if (mode !== "system" || typeof window === "undefined" || !window.matchMedia) return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      const next = getSystemTheme();
-      document.documentElement.setAttribute("data-theme", next);
-    };
+    const handler = () => document.documentElement.setAttribute("data-theme", getSystemTheme());
     mq.addEventListener?.("change", handler);
     return () => mq.removeEventListener?.("change", handler);
   }, [mode]);

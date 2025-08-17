@@ -13,6 +13,7 @@ export default function App() {
     try { return localStorage.getItem(TARGET_KEY) ?? ""; } catch { return ""; }
   });
   const [error, setError] = useState<string>("");
+  const [pickerNonce, setPickerNonce] = useState(0);
   const [timeFormat, setTimeFormat] = useState<"24h" | "12h">(
     () => (localStorage.getItem("time-format") === "12h" ? "12h" : "24h")
   );
@@ -60,6 +61,7 @@ export default function App() {
     setTargetValue("");
     setError("");
     try { localStorage.removeItem(TARGET_KEY); } catch {}
+    setPickerNonce(n => n + 1); // force-remount picker to clear internal UI
   };
 
   return (
@@ -72,6 +74,7 @@ export default function App() {
 
       <div className="controls">
         <DateTimePicker
+          key={pickerNonce}
           value={targetValue}
           onChange={handleChange}
           min={toInputLocal(new Date())}

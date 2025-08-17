@@ -5,27 +5,25 @@ A modular, TypeScript React app that validates a future date/time and shows a pr
 ## Features
 - Future-only validation (blocks past dates)
 - Weeks · Days · Hours · Minutes · Seconds
-- Smooth flip/fade animation on value change
+- Smooth animation on value change
 - Accessible: `aria-live` announcements, clear error messages
-- DRY utilities and SOLID-oriented modular design (hooks, lib, components, types)
+- DRY utils & SOLID-ish modular structure (hooks/lib/components)
 - Theme: System/Light/Dark with persistence
-- Time format: 24h/12h **inline toggle inside the picker** with persistence
+- Time format: 24h/12h toggle **inside** the picker, persistence to localStorage
 - Persists selected target datetime
+
+## GitHub Pages
+- `vite.config.ts` auto-sets `base` to `/countdown-timer-ts/` on CI (Pages), `/` locally
+- `.github/workflows/pages.yml` publishes prod on `main` and previews on PRs
+- SPA fallback is enabled by copying `index.html` → `404.html` in CI
 
 ## Getting Started
 ```bash
-npm i
+npm ci
 npm run dev
+# local prod check
+npm run build && npm run preview
 ```
-http://localhost:5173
 
-## Persistence
-- `countdown-target` — selected datetime
-- `theme-mode` — System/Light/Dark
-- `time-format` — 24h or 12h
-
-## Testing
-```bash
-npm test
-npm run coverage
-```
+## Scripts
+- `npm run ci` → lint + typecheck + tests + build

@@ -1,9 +1,9 @@
-import { TimeLeft } from '../types/time';
+import { TimeLeft } from "../types/time";
 
-const pad2 = (n: number) => String(n).padStart(2, '0');
+const pad2 = (n: number) => String(n).padStart(2, "0");
 
 export function toInputLocal(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, '0');
+  const p = (n: number) => String(n).padStart(2, "0");
   const yyyy = d.getFullYear();
   const mm = p(d.getMonth() + 1);
   const dd = p(d.getDate());
@@ -18,8 +18,7 @@ export function isValidDateString(value: string): boolean {
 }
 
 export function isFutureDate(value: string | Date): boolean {
-  const t =
-    typeof value === 'string' ? new Date(value).getTime() : value.getTime();
+  const t = typeof value === "string" ? new Date(value).getTime() : value.getTime();
   return t > Date.now();
 }
 
@@ -29,9 +28,7 @@ export function nextTickDelay(nowMs: number): number {
 }
 
 export function diffToTimeLeft(diffMs: number): TimeLeft {
-  if (diffMs <= 0) {
-    return { weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
-  }
+  if (diffMs <= 0) return { weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
   const totalSeconds = Math.floor(diffMs / 1000);
   const seconds = totalSeconds % 60;
   const totalMinutes = Math.floor(totalSeconds / 60);
@@ -44,9 +41,7 @@ export function diffToTimeLeft(diffMs: number): TimeLeft {
   return { weeks, days, hours, minutes, seconds };
 }
 
-export function withPadded(
-  left: TimeLeft,
-): TimeLeft & { hoursStr: string; minutesStr: string; secondsStr: string } {
+export function withPadded(left: TimeLeft): TimeLeft & { hoursStr: string; minutesStr: string; secondsStr: string } {
   return {
     ...left,
     hoursStr: pad2(left.hours),

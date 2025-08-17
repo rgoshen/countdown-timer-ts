@@ -12,30 +12,25 @@ describe("DateTimePicker", () => {
     expect(onChange).toHaveBeenLastCalledWith("2030-12-25T00:00:00");
     const h = screen.getByLabelText(/hours/i) as HTMLSelectElement;
     const m = screen.getByLabelText(/minutes/i) as HTMLSelectElement;
-        fireEvent.change(h, { target: { value: "09" } });
+    fireEvent.change(h, { target: { value: "09" } });
     expect(onChange).toHaveBeenLastCalledWith("2030-12-25T09:00:00");
     fireEvent.change(m, { target: { value: "05" } });
     expect(onChange).toHaveBeenLastCalledWith("2030-12-25T09:05:00");
-    expect(onChange).toHaveBeenLastCalledWith("2030-12-25T09:05:00");
   });
 
-  it("supports 12-hour format with AM/PM", () => {
+  it("supports 12-hour format with AM/PM placed after minutes", () => {
     const onChange = vi.fn();
-    const { rerender } = render(<DateTimePicker value="" onChange={onChange} min="2025-01-01T00:00" format="12h" />);
+    render(<DateTimePicker value="" onChange={onChange} min="2025-01-01T00:00" format="12h" />);
     const date = screen.getByLabelText(/select date/i) as HTMLInputElement;
     fireEvent.change(date, { target: { value: "2030-12-25" } });
     const h = screen.getByLabelText(/hours/i) as HTMLSelectElement;
     const m = screen.getByLabelText(/minutes/i) as HTMLSelectElement;
-        const ap = screen.getByLabelText(/am\/pm/i) as HTMLSelectElement;
+    const ap = screen.getByLabelText(/am\/pm/i) as HTMLSelectElement;
     fireEvent.change(h, { target: { value: "12" } });
     fireEvent.change(m, { target: { value: "05" } });
     fireEvent.change(ap, { target: { value: "PM" } });
     expect(onChange).toHaveBeenLastCalledWith("2030-12-25T12:05:00");
     fireEvent.change(ap, { target: { value: "AM" } });
     expect(onChange).toHaveBeenLastCalledWith("2030-12-25T00:05:00");
-
-    // Switch to 24h externally
-    rerender(<DateTimePicker value="2030-12-25T00:05:30" onChange={onChange} min="2025-01-01T00:00" format="24h" />);
-    expect(screen.getByLabelText(/hours/i)).toBeInTheDocument();
   });
 });
