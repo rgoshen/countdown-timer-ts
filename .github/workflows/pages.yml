@@ -1,8 +1,9 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (prod & previews)
 
 on:
   push:
-    branches: [main]
+    branches: [main] # prod
+  pull_request: # PR previews
   workflow_dispatch:
 
 permissions:
@@ -28,7 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # SPA fallback for GitHub Pages (serves index.html on deep links)
+      # SPA fallback so deep links resolve on GH Pages
       - run: cp dist/index.html dist/404.html
 
       - uses: actions/upload-pages-artifact@v3
@@ -36,6 +37,8 @@ jobs:
           path: ./dist
 
   deploy:
+    # Prod deploy when pushing to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -44,3 +47,17 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  deploy_preview:
+    # Preview deploy on PRs
+    if: github.event_name == 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          preview: true # marks this as a PR preview deployment
