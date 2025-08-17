@@ -7,6 +7,7 @@ type Props = {
   onChange: (value: string) => void;
   min?: string;
   format?: TimeFormat;
+  onFormatChange?: (f: TimeFormat) => void;
 };
 
 function split(initial: string) {
@@ -84,7 +85,8 @@ export default function DateTimePicker({ value, onChange, min, format = "24h" }:
 
       <div className="dtp-row">
         <label className="dtp-label">Time</label>
-        <div className="dtp-time">
+        <div className="dtp-inline">
+          <div className="dtp-time">
           {format === "24h" ? (
             <select
               aria-label="Hours"
@@ -147,6 +149,11 @@ export default function DateTimePicker({ value, onChange, min, format = "24h" }:
             })}
           </select>
         </div>
+            <div className="format-toggle small" role="group" aria-label="Time format inside picker">
+              <button type="button" className={`seg ${format === "24h" ? "active" : ""}`} aria-pressed={format === "24h"} onClick={() => onFormatChange?.("24h")}>24h</button>
+              <button type="button" className={`seg ${format === "12h" ? "active" : ""}`} aria-pressed={format === "12h"} onClick={() => onFormatChange?.("12h")}>12h</button>
+            </div>
+          </div>
       </div>
     </div>
   );
