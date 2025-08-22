@@ -2,6 +2,8 @@
 
 A modular, TypeScript React app that validates a future date/time and shows a precise, animated countdown to the second.
 
+[Demo](https://rgoshen.github.io/countdown-timer-ts/)
+
 ## Features
 - Future-only validation (blocks past dates)
 - Weeks · Days · Hours · Minutes · Seconds
