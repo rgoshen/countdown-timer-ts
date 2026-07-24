@@ -91,6 +91,12 @@ git commit -m "fix: declare ESLint flat-config dependencies"
 
 - [ ] **Step 1: Write the failing configuration contract**
 
+Install the exact test-only YAML parser:
+
+```bash
+npm install --save-dev --save-exact yaml@2.9.0
+```
+
 Create `scripts/container-config.test.mjs`:
 
 ```js
@@ -98,6 +104,7 @@ import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
+import { parse } from 'yaml'
 
 const image = 'ghcr.io/rgoshen/countdown-timer-ts:latest'
 
@@ -128,31 +135,53 @@ test('Compose always pulls the GHCR image', () => {
 })
 
 test('GitHub Actions publishes a pinned multi-platform image', () => {
-  const workflow = readFileSync(
-    '.github/workflows/publish-container.yml',
-    'utf8',
+  const workflow = parse(
+    readFileSync('.github/workflows/publish-container.yml', 'utf8'),
   )
-  const required = [
-    'main',
-    'packages: write',
-    'id-token: write',
-    'linux/amd64,linux/arm64',
-    'type=raw,value=latest',
-    'type=sha,prefix=sha-',
-    'push-to-registry: true',
-    'actions/checkout@11d5960a326750d5838078e36cf38b85af677262',
-    'actions/attest@36051bcae73b7c2a8a6945a48cbf80953c6baa35',
-    'docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9',
-    'docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051',
-    'docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130',
-    'docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f',
-    'docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8',
-  ]
+  const job = workflow.jobs.publish
+  const steps = new Map(job.steps.map((step) => [step.name, step]))
 
-  for (const value of required) {
-    assert.match(workflow, new RegExp(value.replaceAll('/', '\\/')))
+  assert.deepEqual(workflow.on.push.branches, ['main'])
+  assert.ok(Object.hasOwn(workflow.on, 'workflow_dispatch'))
+  assert.equal(job.if, "github.ref == 'refs/heads/main'")
+  assert.deepEqual(job.permissions, {
+    contents: 'read',
+    packages: 'write',
+    attestations: 'write',
+    'id-token': 'write',
+  })
+
+  const expectedActions = new Map([
+    ['Check out repository', 'actions/checkout'],
+    ['Set up QEMU', 'docker/setup-qemu-action'],
+    ['Set up Docker Buildx', 'docker/setup-buildx-action'],
+    ['Log in to GHCR', 'docker/login-action'],
+    ['Extract image metadata', 'docker/metadata-action'],
+    ['Build and push image', 'docker/build-push-action'],
+    ['Attest image provenance', 'actions/attest'],
+  ])
+  for (const [name, action] of expectedActions) {
+    assert.match(steps.get(name).uses, new RegExp(`^${action}@[0-9a-f]{40}$`))
   }
-  assert.doesNotMatch(workflow, /uses:\s+\S+@v\d+/)
+
+  assert.equal(steps.get('Log in to GHCR').with.registry, '${{ env.REGISTRY }}')
+  assert.equal(
+    steps.get('Log in to GHCR').with.password,
+    '${{ secrets.GITHUB_TOKEN }}',
+  )
+  assert.deepEqual(
+    steps.get('Extract image metadata').with.tags.trim().split('\n'),
+    ['type=raw,value=latest', 'type=sha,prefix=sha-'],
+  )
+  assert.equal(
+    steps.get('Build and push image').with.platforms,
+    'linux/amd64,linux/arm64',
+  )
+  assert.equal(steps.get('Build and push image').with.push, true)
+  assert.equal(
+    steps.get('Attest image provenance').with['push-to-registry'],
+    true,
+  )
 })
 ```
 
@@ -296,7 +325,7 @@ Prepend a Feature entry to `SUMMARY.md`, then run:
 
 ```bash
 git diff --check
-git add scripts/container-config.test.mjs .github/workflows/publish-container.yml compose.yaml .dockerignore package.json SUMMARY.md
+git add scripts/container-config.test.mjs .github/workflows/publish-container.yml compose.yaml .dockerignore package.json package-lock.json SUMMARY.md
 git commit -m "feat: publish and pull GHCR container image"
 ```
 

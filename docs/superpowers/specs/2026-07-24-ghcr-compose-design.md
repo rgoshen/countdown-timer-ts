@@ -45,10 +45,11 @@ fallbacks.
 
 ## Configuration Validation
 
-A Node test using only built-in modules renders Compose as JSON and asserts the
-exact image, always-pull policy, lack of a local build, port mapping, and health
-command. The same test reads the workflow and asserts triggers, permissions,
-platforms, tags, attestation, and pinned action SHAs.
+A Node test renders Compose as JSON and asserts the exact image, always-pull
+policy, lack of a local build, port mapping, and health command. The same test
+parses the workflow with `yaml@2.9.0` and asserts triggers, permissions,
+platforms, tags, attestation, and commit-pinned actions against the structured
+configuration GitHub consumes.
 
 The workflow YAML is also parsed by Prettier, the existing CI suite is run from
 a clean dependency installation, and the Dockerfile is built and smoke-tested

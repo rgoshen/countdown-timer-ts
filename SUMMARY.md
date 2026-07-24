@@ -1,5 +1,26 @@
 # Change Summary
 
+## [2026-07-24 16:32] Commit Summary
+
+**Change Type:** Docs
+**Scope:** GHCR configuration testing
+
+**Summary:**
+Replace workflow source-text checks in the implementation plan with structured
+YAML contract assertions.
+
+**Rationale:**
+Parsing the workflow verifies the configuration GitHub consumes and permits
+intentional action upgrades while still enforcing immutable commit pins.
+
+**Bug Fix Context (if applicable):**
+The initial plan would have tested workflow text rather than its parsed
+behavior.
+
+**References:**
+- TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
+- Issue: Not applicable
+
 ## [2026-07-24 16:19] Commit Summary
 
 **Change Type:** Docs
