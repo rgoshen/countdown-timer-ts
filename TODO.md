@@ -1,22 +1,28 @@
 # TODO
 
-## [2026-07-24] Feature: Local Docker Compose Runtime
+## [2026-07-24] Feature: GHCR-backed Docker Compose Runtime
 
-**Objective:**  
-Allow developers to build and run the production-like countdown timer locally
-with `docker compose up --build` and access it at `http://localhost:8080`.
+**Objective:**
+Publish the production countdown timer as a public multi-platform GHCR image
+and make `docker compose up` always pull its latest version for local use at
+`http://localhost:8080`.
 
-**Approach:**  
-Add a single-service Compose configuration that builds the existing multi-stage
-Dockerfile, publishes nginx on host port 8080, and reports container health.
-Add a Docker build-context ignore file and document the local workflow.
+**Approach:**
+Add a pinned GitHub Actions workflow that publishes `latest` and immutable
+commit tags from `main`. Add a single-service Compose configuration that pulls
+`ghcr.io/rgoshen/countdown-timer-ts:latest`, publishes nginx on port 8080, and
+reports container health. Repair the missing direct lint dependencies exposed
+by a clean install, filter the Docker build context, and document the workflow.
 
-**Tests:**  
-Validate the resolved Compose configuration, run the existing CI suite, build
-the image, start the service, wait for a healthy container, and verify the app
-responds over HTTP from the host.
+**Tests:**
+Use an executable Node contract to validate the Compose and publication
+configuration, run the existing CI suite from a clean install, format-check
+the YAML, and build and smoke-test the production image locally. After merge,
+verify the GitHub Actions publication, public package visibility, anonymous
+pull, container health, and host HTTP response.
 
-**Risks & Tradeoffs:**  
-This workflow intentionally serves an immutable production bundle without hot
-reload. Source changes require an image rebuild, which keeps local container
-behavior aligned with the deployed artifact at the cost of slower iteration.
+**Risks & Tradeoffs:**
+The mutable `latest` tag favors convenience over reproducibility, so each
+publication also retains a commit-specific tag for rollback. GHCR creates the
+first package as private; anonymous Compose startup becomes available only
+after the first `main` publication and a one-time visibility change to public.

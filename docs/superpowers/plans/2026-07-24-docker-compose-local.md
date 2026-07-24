@@ -1,5 +1,8 @@
 # Local Docker Compose Runtime Implementation Plan
 
+> **Status:** Superseded by
+> `docs/superpowers/plans/2026-07-24-ghcr-compose.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build and run the production countdown timer locally at `http://localhost:8080` with `docker compose up --build`.

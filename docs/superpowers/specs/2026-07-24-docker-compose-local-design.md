@@ -1,5 +1,8 @@
 # Local Docker Compose Runtime Design
 
+> **Status:** Superseded by
+> `docs/superpowers/specs/2026-07-24-ghcr-compose-design.md`.
+
 ## Objective
 
 Provide a production-like local container workflow in which

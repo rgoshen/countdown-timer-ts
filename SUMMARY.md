@@ -1,5 +1,27 @@
 # Change Summary
 
+## [2026-07-24 16:19] Commit Summary
+
+**Change Type:** Docs
+**Scope:** GHCR-backed Docker Compose runtime
+
+**Summary:**
+Replace the local-image Compose design with the approved GHCR publication and
+always-pull workflow, including exact implementation and verification steps.
+
+**Rationale:**
+Compose must consume the same multi-platform artifact published from `main`,
+while immutable commit tags preserve rollback even though local startup follows
+the mutable `latest` tag.
+
+**Bug Fix Context (if applicable):**
+The previous plan never created `compose.yaml`, causing Docker Compose to fail
+with `no configuration file provided: not found`.
+
+**References:**
+- TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
+- Issue: Not applicable
+
 ## [2026-07-24 15:01] Commit Summary
 
 **Change Type:** Chore
