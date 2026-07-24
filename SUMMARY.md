@@ -1,5 +1,25 @@
 # Change Summary
 
+## [2026-07-24 15:01] Commit Summary
+
+**Change Type:** Chore
+**Scope:** Git worktree isolation
+
+**Summary:**
+Ignore the project-local worktree directory used for isolated feature
+implementation.
+
+**Rationale:**
+Keeping linked worktrees out of version control prevents nested checkout
+contents from appearing as repository changes during subagent execution.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Local Docker Compose Runtime
+- Issue: Not applicable
+
 ## [2026-07-24 14:53] Commit Summary
 
 **Change Type:** Docs

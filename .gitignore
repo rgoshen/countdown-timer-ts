@@ -58,3 +58,6 @@ Temporary Items
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Local Git worktrees
+.worktrees/
