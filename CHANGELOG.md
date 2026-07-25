@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/rgoshen/countdown-timer-ts/compare/v1.0.0...v1.0.1) (2026-07-25)
+
+### Bug Fixes
+
+* scope the pages concurrency group per ref ([ba6db61](https://github.com/rgoshen/countdown-timer-ts/commit/ba6db6126ec93b5142c23716c5305220ff4d25c1))
+
 ## 1.0.0 (2026-07-25)
 
 ### Features
