@@ -1,5 +1,28 @@
 # Change Summary
 
+## [2026-07-24 20:45] Commit Summary
+
+**Change Type:** Feature
+**Scope:** Release workflow
+
+**Summary:**
+Add a `main`-triggered workflow that runs semantic-release with SHA-pinned
+actions, full history checkout, and an explicit least-privilege permissions
+block, plus contract tests asserting each of those properties.
+
+**Rationale:**
+The repository default for `GITHUB_TOKEN` is read-only, so the job must declare
+`contents: write` explicitly or the release push fails. Full history is
+required because semantic-release derives the previous version from git tags,
+and a shallow clone would make every release look like the first.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 20:30] Commit Summary
 
 **Change Type:** Feature
