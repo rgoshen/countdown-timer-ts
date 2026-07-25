@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:container-config": "node --test scripts/verify-container-config.mjs",
     "coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
@@ -43,6 +44,7 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "8.39.0",
     "vite": "^7.1.5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "yaml": "2.9.0"
   }
 }

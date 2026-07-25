@@ -77,13 +77,13 @@ git commit -m "fix: declare ESLint flat-config dependencies"
 ### Task 2: GHCR Publication and Compose Pull Contract
 
 **Files:**
-- Create: `scripts/container-config.test.mjs`
+- Create: `scripts/verify-container-config.mjs`
 - Create: `.github/workflows/publish-container.yml`
 - Create: `compose.yaml`
 - Create: `.dockerignore`
 - Modify: `package.json`
 - Modify: `SUMMARY.md`
-- Test: `scripts/container-config.test.mjs`
+- Test: `scripts/verify-container-config.mjs`
 
 **Interfaces:**
 - Consumes: the existing Dockerfile, nginx configuration, and GitHub repository identity.
@@ -97,7 +97,7 @@ Install the exact test-only YAML parser:
 npm install --save-dev --save-exact yaml@2.9.0
 ```
 
-Create `scripts/container-config.test.mjs`:
+Create `scripts/verify-container-config.mjs`:
 
 ```js
 import assert from 'node:assert/strict'
@@ -188,7 +188,7 @@ test('GitHub Actions publishes a pinned multi-platform image', () => {
 Add to `package.json`:
 
 ```json
-"test:container-config": "node --test scripts/container-config.test.mjs",
+"test:container-config": "node --test scripts/verify-container-config.mjs",
 ```
 
 - [ ] **Step 2: Verify red**
@@ -325,7 +325,7 @@ Prepend a Feature entry to `SUMMARY.md`, then run:
 
 ```bash
 git diff --check
-git add scripts/container-config.test.mjs .github/workflows/publish-container.yml compose.yaml .dockerignore package.json package-lock.json SUMMARY.md
+git add scripts/verify-container-config.mjs .github/workflows/publish-container.yml compose.yaml .dockerignore package.json package-lock.json SUMMARY.md
 git commit -m "feat: publish and pull GHCR container image"
 ```
 

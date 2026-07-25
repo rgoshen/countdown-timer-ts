@@ -1,5 +1,28 @@
 # Change Summary
 
+## [2026-07-24 17:13] Commit Summary
+
+**Change Type:** Feature
+**Scope:** GHCR publication and Docker Compose
+
+**Summary:**
+Add the always-pull Compose service, filtered Docker build context, pinned
+multi-platform GHCR publication workflow, provenance attestation, and
+executable configuration contract.
+
+**Rationale:**
+GitHub Actions now owns the shared production image while Compose consumes that
+artifact without a local build fallback. Structured tests validate the
+configuration GitHub and Docker consume rather than matching source text.
+
+**Bug Fix Context (if applicable):**
+The repository previously had no Compose configuration, causing
+`docker compose up` to fail before resolving any service.
+
+**References:**
+- TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
+- Issue: Not applicable
+
 ## [2026-07-24 16:44] Commit Summary
 
 **Change Type:** Fix
