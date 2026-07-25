@@ -1,13 +1,9 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { ThemeContext, ThemeMode, ResolvedTheme } from "./themeContext";
 
-export type ThemeMode = "light" | "dark" | "system";
-type Resolved = "light" | "dark";
-type Ctx = { mode: ThemeMode; setMode: (m: ThemeMode) => void; computed: Resolved; };
-
-const ThemeContext = createContext<Ctx | null>(null);
 const STORAGE_KEY = "theme-mode";
 
-function getSystemTheme(): Resolved {
+function getSystemTheme(): ResolvedTheme {
   if (typeof window === "undefined" || !window.matchMedia) return "light";
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
@@ -19,7 +15,7 @@ export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) =
     return saved ?? "system";
   });
 
-  const computed: Resolved = useMemo(() => (mode === "system" ? getSystemTheme() : mode), [mode]);
+  const computed: ResolvedTheme = useMemo(() => (mode === "system" ? getSystemTheme() : mode), [mode]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", computed);
@@ -36,9 +32,3 @@ export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) =
 
   return <ThemeContext.Provider value={{ mode, setMode, computed }}>{children}</ThemeContext.Provider>;
 };
-
-export function useTheme() {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
-  return ctx;
-}

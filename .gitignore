@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+*.tsbuildinfo
 *.local
 
 # Editor directories and files
@@ -58,3 +59,9 @@ Temporary Items
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Local Git worktrees
+.worktrees/
+
+# Local agent scratch (plans keep their own ledgers here)
+.superpowers/

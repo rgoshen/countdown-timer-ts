@@ -1,0 +1,12 @@
+services:
+  app:
+    image: ghcr.io/rgoshen/countdown-timer-ts:${IMAGE_TAG:-latest}
+    pull_policy: always
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s

@@ -73,7 +73,7 @@ export default function DateTimePicker({ value, onChange, min, format = "24h", o
     const dispNow = toDisplayHour(current24);
     if (h12 !== dispNow.h12) setH12(dispNow.h12);
     if (meridiem !== dispNow.meridiem) setMeridiem(dispNow.meridiem);
-  }, [format]);  // sync hour on format change
+  }, [format, h12, h24, meridiem]);  // sync hour on format change
 
   const minDate = min ? (min.split("T")[0] ?? "") : "";
 
