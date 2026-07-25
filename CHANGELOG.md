@@ -1,0 +1,32 @@
+## 1.0.0 (2026-07-25)
+
+### Features
+
+* configure semantic-release with an explicit changelog type map ([aba6d9f](https://github.com/rgoshen/countdown-timer-ts/commit/aba6d9fc0be53415189fbc427fe5dcac6b074742))
+* enforce conventional commit messages with commitlint ([ee1c712](https://github.com/rgoshen/countdown-timer-ts/commit/ee1c7129fbb5f585b6c3b075bc338244ddd9de21))
+* publish and pull GHCR container image ([ca85138](https://github.com/rgoshen/countdown-timer-ts/commit/ca85138553c231097e7d2725989f2d99d95376a8))
+
+### Bug Fixes
+
+* pin the changelog preset to the version the writer supports ([7afb54c](https://github.com/rgoshen/countdown-timer-ts/commit/7afb54c3c2b4642fa22a0e9784eec9534ecd49a7))
+* remove the pages preview job that cannot succeed ([307a935](https://github.com/rgoshen/countdown-timer-ts/commit/307a935c00889ba1c19061fbaed60372df911452))
+* restore clean CI baseline ([fb8fa23](https://github.com/rgoshen/countdown-timer-ts/commit/fb8fa23de88e08e36407bd70b190c0037b9969e6))
+* use the effect key so hidden commit types stay out of the changelog ([e640b2f](https://github.com/rgoshen/countdown-timer-ts/commit/e640b2f5054f71bb1729e2079f8cb785a370df0e))
+
+### Documentation
+
+* declare the changelog preset once at the config root ([6cfde42](https://github.com/rgoshen/countdown-timer-ts/commit/6cfde42660391555ee7e16284fc808317d7df179))
+* design automated release and changelog ([1008a9a](https://github.com/rgoshen/countdown-timer-ts/commit/1008a9ad3c715d75903e8371dea5b30cecea5cef))
+* design local Docker Compose workflow ([7d6e788](https://github.com/rgoshen/countdown-timer-ts/commit/7d6e788e5d107f821520be33691f8065fd490d5b))
+* document GHCR Compose workflow ([87067ef](https://github.com/rgoshen/countdown-timer-ts/commit/87067ef27275ac1853bf65a9b332ed03e1955c84))
+* document the automated release process ([251746a](https://github.com/rgoshen/countdown-timer-ts/commit/251746a8100d7f5e13df34cc338ec62565e709f7))
+* note the dry-run result on non-release branches ([c020c1b](https://github.com/rgoshen/countdown-timer-ts/commit/c020c1b0e84a452a7a6192743f93562d9de29741))
+* plan automated release and changelog implementation ([a3977d3](https://github.com/rgoshen/countdown-timer-ts/commit/a3977d3da47419e8f14084c909552010d0592759))
+* plan local Docker Compose implementation ([6513763](https://github.com/rgoshen/countdown-timer-ts/commit/65137636b630535c214549266d6e412d63bd95b1))
+* revise container workflow for GHCR ([4a27ca1](https://github.com/rgoshen/countdown-timer-ts/commit/4a27ca125ba59020ef5d840f80997821a5c86a44))
+* strengthen container config test plan ([08a119f](https://github.com/rgoshen/countdown-timer-ts/commit/08a119fa176aca2df281ffb1b833efe039fee5c8))
+
+### Continuous Integration
+
+* add the semantic-release workflow ([8be504c](https://github.com/rgoshen/countdown-timer-ts/commit/8be504c36fe33a35c948000d514d65dc19123a39))
+* give dependabot conventional commit messages ([106ee4e](https://github.com/rgoshen/countdown-timer-ts/commit/106ee4e2ffb3ab27859f7b3a7eb664241e3a2807))
