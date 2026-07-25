@@ -1,5 +1,29 @@
 # Change Summary
 
+## [2026-07-24 20:19] Commit Summary
+
+**Change Type:** Docs
+**Scope:** Automated release and changelog
+
+**Summary:**
+Add the six-task implementation plan and correct it to declare the changelog
+preset once at the configuration root rather than repeating it under each
+plugin.
+
+**Rationale:**
+The plan originally claimed the analyzer and the notes generator resolve the
+preset independently and share no options. The semantic-release source
+contradicts this: each plugin is bound with the global options spread into its
+own configuration, so a root-level declaration reaches both. Declaring it once
+removes roughly twenty-four duplicated lines that could otherwise drift apart.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 19:56] Commit Summary
 
 **Change Type:** Docs

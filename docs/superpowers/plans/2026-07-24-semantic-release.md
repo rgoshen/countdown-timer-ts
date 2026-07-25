@@ -27,6 +27,7 @@
 - Create: `commitlint.config.js`
 - Create: `.husky/commit-msg`
 - Modify: `package.json` (devDependencies, scripts)
+- Modify: `.gitignore` (already contains the `.superpowers/` entry; commit it with this task)
 - Modify: `SUMMARY.md`
 
 **Interfaces:**
@@ -124,7 +125,7 @@ Not applicable.
 Then commit:
 
 ```bash
-git add package.json package-lock.json commitlint.config.js .husky SUMMARY.md
+git add package.json package-lock.json commitlint.config.js .husky .gitignore SUMMARY.md
 git commit -m "feat: enforce conventional commit messages with commitlint"
 ```
 
@@ -212,31 +213,32 @@ test("the release commit carries the changelog and version files", () => {
   ]);
 });
 
+test("the preset is declared once at the root so both plugins inherit it", () => {
+  assert.equal(releaseConfig.preset, "conventionalcommits");
+  assert.equal(pluginOptions(findPlugin("@semantic-release/commit-analyzer")).preset, undefined);
+  assert.equal(
+    pluginOptions(findPlugin("@semantic-release/release-notes-generator")).preset,
+    undefined,
+  );
+});
+
 test("documentation and refactor commits are visible in the changelog", () => {
-  for (const name of [
-    "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
-  ]) {
-    const options = pluginOptions(findPlugin(name));
-    assert.equal(options.preset, "conventionalcommits");
+  const visible = new Map(
+    releaseConfig.presetConfig.types
+      .filter((entry) => !entry.hidden)
+      .map((entry) => [entry.type, entry.section]),
+  );
+  for (const type of ["feat", "fix", "perf", "refactor", "docs", "build", "ci"]) {
+    assert.ok(visible.has(type), `${type} should be visible`);
+  }
 
-    const visible = new Map(
-      options.presetConfig.types
-        .filter((entry) => !entry.hidden)
-        .map((entry) => [entry.type, entry.section]),
-    );
-    for (const type of ["feat", "fix", "perf", "refactor", "docs", "build", "ci"]) {
-      assert.ok(visible.has(type), `${type} should be visible in ${name}`);
-    }
-
-    const hidden = new Set(
-      options.presetConfig.types
-        .filter((entry) => entry.hidden)
-        .map((entry) => entry.type),
-    );
-    for (const type of ["style", "test", "chore"]) {
-      assert.ok(hidden.has(type), `${type} should be hidden in ${name}`);
-    }
+  const hidden = new Set(
+    releaseConfig.presetConfig.types
+      .filter((entry) => entry.hidden)
+      .map((entry) => entry.type),
+  );
+  for (const type of ["style", "test", "chore"]) {
+    assert.ok(hidden.has(type), `${type} should be hidden`);
   }
 });
 ```
@@ -268,52 +270,29 @@ npm install --save-dev --save-exact \
 
 - [ ] **Step 7: Write `.releaserc.json`**
 
-The `types` array is duplicated across both plugins deliberately — the analyzer and the notes generator each resolve the preset independently, and options are not shared between them.
+`preset` and `presetConfig` are declared **once at the root**, not per plugin. semantic-release spreads global options into every plugin's config — `lib/plugins/normalize.js` binds each plugin with `cloneDeep({ ...options, ...config })` — so both `commit-analyzer` and `release-notes-generator` inherit them, and plugin-specific config still wins where it is set. Repeating the `types` array under each plugin would be ~24 duplicated lines that can silently drift apart.
 
 ```json
 {
   "branches": ["main"],
+  "preset": "conventionalcommits",
+  "presetConfig": {
+    "types": [
+      { "type": "feat", "section": "Features" },
+      { "type": "fix", "section": "Bug Fixes" },
+      { "type": "perf", "section": "Performance Improvements" },
+      { "type": "refactor", "section": "Code Refactoring" },
+      { "type": "docs", "section": "Documentation" },
+      { "type": "build", "section": "Build System" },
+      { "type": "ci", "section": "Continuous Integration" },
+      { "type": "style", "hidden": true },
+      { "type": "test", "hidden": true },
+      { "type": "chore", "hidden": true }
+    ]
+  },
   "plugins": [
-    [
-      "@semantic-release/commit-analyzer",
-      {
-        "preset": "conventionalcommits",
-        "presetConfig": {
-          "types": [
-            { "type": "feat", "section": "Features" },
-            { "type": "fix", "section": "Bug Fixes" },
-            { "type": "perf", "section": "Performance Improvements" },
-            { "type": "refactor", "section": "Code Refactoring" },
-            { "type": "docs", "section": "Documentation" },
-            { "type": "build", "section": "Build System" },
-            { "type": "ci", "section": "Continuous Integration" },
-            { "type": "style", "hidden": true },
-            { "type": "test", "hidden": true },
-            { "type": "chore", "hidden": true }
-          ]
-        }
-      }
-    ],
-    [
-      "@semantic-release/release-notes-generator",
-      {
-        "preset": "conventionalcommits",
-        "presetConfig": {
-          "types": [
-            { "type": "feat", "section": "Features" },
-            { "type": "fix", "section": "Bug Fixes" },
-            { "type": "perf", "section": "Performance Improvements" },
-            { "type": "refactor", "section": "Code Refactoring" },
-            { "type": "docs", "section": "Documentation" },
-            { "type": "build", "section": "Build System" },
-            { "type": "ci", "section": "Continuous Integration" },
-            { "type": "style", "hidden": true },
-            { "type": "test", "hidden": true },
-            { "type": "chore", "hidden": true }
-          ]
-        }
-      }
-    ],
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
     ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
     ["@semantic-release/npm", { "npmPublish": false }],
     [
@@ -331,7 +310,7 @@ The `types` array is duplicated across both plugins deliberately — the analyze
 - [ ] **Step 8: Run the test to verify it passes**
 
 Run: `npm run test:release-config`
-Expected: PASS, 6 tests.
+Expected: PASS, 7 tests.
 
 - [ ] **Step 9: Preview the release without writing anything**
 
@@ -490,7 +469,7 @@ jobs:
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `npm run test:release-config`
-Expected: PASS, 11 tests.
+Expected: PASS, 12 tests.
 
 - [ ] **Step 5: Confirm formatting matches the repository style**
 
@@ -597,7 +576,7 @@ updates:
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `npm run test:release-config`
-Expected: PASS, 12 tests.
+Expected: PASS, 13 tests.
 
 - [ ] **Step 5: Commit**
 
@@ -684,7 +663,7 @@ The job is unreachable by construction: the `github-pages` environment restricts
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `npm run test:release-config`
-Expected: PASS, 15 tests.
+Expected: PASS, 16 tests.
 
 - [ ] **Step 5: Confirm the remaining YAML is valid and formatted**
 
