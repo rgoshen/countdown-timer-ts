@@ -1,5 +1,29 @@
 # Change Summary
 
+## [2026-07-24 20:15] Commit Summary
+
+**Change Type:** Feature
+**Scope:** Commit message enforcement
+
+**Summary:**
+Add commitlint and a husky `commit-msg` hook so a non-conventional commit
+message is rejected before it is recorded. Remove the husky sample
+`pre-commit` hook, which would have run the watch-mode test runner and hung
+every commit.
+
+**Rationale:**
+Automated releasing reads commit messages as its only input, so an invalid
+message silently produces a wrong version or no release at all. Validating at
+authorship fails while the message is still cheap to fix, rather than after a
+push when correcting it requires an interactive rebase.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 20:19] Commit Summary
 
 **Change Type:** Docs
