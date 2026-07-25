@@ -66,13 +66,14 @@ test("the preset is declared once at the root so both plugins inherit it", () =>
 test("documentation and refactor commits are visible in the changelog", () => {
   const visible = new Map(
     releaseConfig.presetConfig.types
-      .filter((entry) => entry.effect !== "hidden")
+      .filter((entry) => !entry.hidden)
       .map((entry) => [entry.type, entry.section]),
   );
   for (const type of [
     "feat",
     "fix",
     "perf",
+    "revert",
     "refactor",
     "docs",
     "build",
@@ -83,7 +84,7 @@ test("documentation and refactor commits are visible in the changelog", () => {
 
   const hidden = new Set(
     releaseConfig.presetConfig.types
-      .filter((entry) => entry.effect === "hidden")
+      .filter((entry) => entry.hidden)
       .map((entry) => entry.type),
   );
   for (const type of ["style", "test", "chore"]) {
@@ -157,4 +158,61 @@ test("pull requests still build, so checks remain meaningful", () => {
 
 test("production still deploys from main", () => {
   assert.match(pagesWorkflow.jobs.deploy.if, /refs\/heads\/main/);
+});
+
+test("the installed preset actually renders the configured sections", async () => {
+  const { generateNotes } = await import(
+    "@semantic-release/release-notes-generator"
+  );
+  const mk = (h, message) => ({
+    hash: h,
+    message,
+    subject: message.split("\n")[0],
+    body: "",
+    committerDate: "2026-07-24",
+    author: { name: "a" },
+    committer: { name: "a" },
+    tree: { long: h },
+  });
+
+  const notes = await generateNotes(
+    { preset: releaseConfig.preset, presetConfig: releaseConfig.presetConfig },
+    {
+      commits: [
+        mk("1".repeat(40), "feat: a visible feature"),
+        mk("2".repeat(40), "fix: a visible fix"),
+        mk("3".repeat(40), "chore: a hidden chore"),
+        mk(
+          "4".repeat(40),
+          "feat: breaking change\n\nBREAKING CHANGE: the old api is gone",
+        ),
+      ],
+      lastRelease: {},
+      nextRelease: { version: "1.0.0", gitTag: "v1.0.0", channel: null },
+      options: {
+        repositoryUrl: "https://github.com/rgoshen/countdown-timer-ts",
+      },
+      cwd: process.cwd(),
+      env: process.env,
+    },
+  );
+
+  assert.match(notes, /### Features/);
+  assert.match(notes, /a visible feature/);
+  assert.match(notes, /### Bug Fixes/);
+  assert.match(notes, /a visible fix/);
+  assert.match(notes, /BREAKING CHANGES/);
+  assert.doesNotMatch(notes, /a hidden chore/);
+});
+
+test("the pages workflow builds on the pinned node version", () => {
+  const pagesSetupNode = pagesWorkflow.jobs.build.steps.find((step) =>
+    step.uses?.startsWith("actions/setup-node@"),
+  );
+  assert.equal(pagesSetupNode.with["node-version-file"], ".nvmrc");
+});
+
+test("releases cannot run concurrently", () => {
+  assert.equal(releaseWorkflow.concurrency.group, "release");
+  assert.equal(releaseWorkflow.concurrency["cancel-in-progress"], false);
 });

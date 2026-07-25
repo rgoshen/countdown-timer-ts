@@ -1,5 +1,48 @@
 # Change Summary
 
+## [2026-07-24 22:00] Commit Summary
+
+**Change Type:** Fix
+**Scope:** Release configuration
+
+**Summary:**
+Pin `conventional-changelog-conventionalcommits` to `8.0.0` (last version
+compatible with writer v8), restore the `hidden` key that preset v8 actually
+reads, add the `revert` type, pin the pages workflow to `.nvmrc` so its Node
+version matches the branch's raised floor, and add a `concurrency` guard to
+the release workflow so overlapping pushes to `main` cannot start two release
+jobs. Add a runtime test that renders real notes through the installed
+preset instead of only inspecting `.releaserc.json` shape, plus two guard
+tests for the pages Node version and release concurrency.
+
+**Rationale:**
+Sixteen existing tests all asserted on the shape of `.releaserc.json` and
+never once invoked the preset, so a config that rendered nothing could still
+pass every test. The new runtime test closes that gap by calling
+`generateNotes` with synthetic commits and asserting on the actual Markdown
+output, which is the only way this class of bug is caught before a release.
+
+**Bug Fix Context (if applicable):**
+`@semantic-release/release-notes-generator@14.1.1` depends on
+`conventional-changelog-writer@^8`, which renders sections using Handlebars
+*string* templates. `conventional-changelog-conventionalcommits@9` and later
+switched to Handlebars *function* templates, and also renamed the per-type
+visibility flag from `hidden` to `effect`. With `conventionalcommits@10.2.1`
+installed against writer v8, the mismatched template format meant every
+section, commit bullet, and BREAKING CHANGES block rendered as nothing — the
+generated notes were exactly `## 1.0.0 (2026-07-25)` and nothing else, with
+no warning or error. Downgrading the preset to `8.0.0` restores template
+compatibility with the installed writer, and switching `effect: "hidden"`
+back to `hidden: true` restores the visibility flag the v8 preset actually
+reads. Verified by rendering real notes from four synthetic commits (feat,
+fix, hidden chore, and a breaking-change feat): `### Features`,
+`### Bug Fixes`, and `### ⚠ BREAKING CHANGES` all rendered with their commit
+bullets, and the hidden chore did not appear anywhere in the output.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 21:45] Commit Summary
 
 **Change Type:** Fix
