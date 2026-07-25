@@ -1,5 +1,34 @@
 # Change Summary
 
+## [2026-07-24 22:23] Commit Summary
+
+**Change Type:** Fix
+**Scope:** Pages workflow concurrency
+
+**Summary:**
+Scope the Pages concurrency group per ref and restrict cancellation to pull
+request events, with contract tests asserting both.
+
+**Rationale:**
+Deployment correctness outranks runner minutes. Pull request builds keep
+cancelling their own superseded runs, which is where the savings actually
+came from, while a push to `main` now queues instead of being cancelled.
+
+**Bug Fix Context (if applicable):**
+The workflow used the static concurrency group `pages` with
+`cancel-in-progress: true`, placing every branch and event in one bucket. The
+newly added Dependabot version updates opened fourteen pull requests at once,
+and their builds entered that shared group and cancelled the in-flight
+production deploy for the `main` merge: `build` succeeded at 05:15:34 and
+`deploy` was cancelled three seconds after starting. The last successful
+production deploy was 2026-06-26, so the live site did not carry the merged
+application changes. Per-ref grouping makes a pull request build unable to
+reach the group a production deploy runs in.
+
+**References:**
+- TODO.md: 2026-07-24 Pages Concurrency Cancels Production Deploys
+- Issue: Not applicable
+
 ## [2026-07-24 21:40] Commit Summary
 
 **Change Type:** Docs

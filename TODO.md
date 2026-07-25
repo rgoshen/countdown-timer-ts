@@ -1,5 +1,25 @@
 # TODO
 
+## [2026-07-24] Fix: Pages Concurrency Cancels Production Deploys
+
+**Objective:**
+Stop a pull request build from cancelling the production GitHub Pages deploy.
+
+**Approach:**
+Scope the workflow concurrency group per ref instead of the static name
+`pages`, and cancel in progress only for pull request events, so superseded
+pull request builds still cancel themselves while a push to `main` queues.
+
+**Tests:**
+Two contract assertions: the group name is not the static `pages` and derives
+from `github.ref`, and cancellation is conditional on the event being a pull
+request.
+
+**Risks & Tradeoffs:**
+Concurrent pushes to `main` now queue rather than cancel, so a rapid second
+push waits for the first deploy instead of superseding it. That is the
+intended trade: a slower queue is preferable to a skipped deployment.
+
 ## [2026-07-24] Feature: Automated Release and Changelog
 
 **Objective:**
