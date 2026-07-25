@@ -1,5 +1,27 @@
 # Change Summary
 
+## [2026-07-24 21:30] Commit Summary
+
+**Change Type:** Docs
+**Scope:** Release process
+
+**Summary:**
+Document that releases are automatic, which commit types produce which version
+bump, which types appear in the changelog without cutting a release, how to
+preview a release, and that `CHANGELOG.md` is generated rather than edited.
+
+**Rationale:**
+The mapping from commit type to version bump is the one piece of knowledge a
+contributor needs before writing a commit message, and it is otherwise only
+discoverable by reading `.releaserc.json`.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 21:15] Commit Summary
 
 **Change Type:** Fix

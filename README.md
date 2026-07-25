@@ -73,3 +73,39 @@ docker compose down
 
 - `npm run ci` → lint + typecheck + tests + build
 - `npm run test:container-config` → Compose and GHCR workflow contract
+
+## Releases
+
+Releases are automatic. Merging to `main` runs `semantic-release`, which reads
+the Conventional Commit messages since the previous tag and, when at least one
+of them qualifies, creates a git tag, publishes a GitHub Release, updates
+`CHANGELOG.md`, and bumps the `package.json` version.
+
+| Commit type                           | Release                             |
+| ------------------------------------- | ----------------------------------- |
+| `feat:`                               | minor                               |
+| `fix:`                                | patch                               |
+| `perf:`                               | patch                               |
+| `BREAKING CHANGE:` footer             | major                               |
+| `docs:`, `refactor:`, `build:`, `ci:` | none, but listed in the changelog   |
+| `style:`, `test:`, `chore:`           | none, and hidden from the changelog |
+
+Commit messages are validated by a `commit-msg` hook, so an invalid message is
+rejected before it is recorded. Run `npm install` once after cloning to
+activate the hook.
+
+To preview what the next release would be without changing anything:
+
+```bash
+GITHUB_TOKEN=$(gh auth token) npx semantic-release --dry-run
+```
+
+Run that from `main`. On any other branch it reports that semantic-release is
+configured to publish only from `main` and computes no version — which is the
+branch restriction working, not an error.
+
+`CHANGELOG.md` is generated. Do not edit it by hand; the next release
+overwrites hand-written changes.
+
+Deployment is independent of releasing. GitHub Pages and the GHCR image publish
+on every push to `main`, whether or not that push produces a release.
