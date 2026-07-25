@@ -1,5 +1,30 @@
 # Change Summary
 
+## [2026-07-24 21:15] Commit Summary
+
+**Change Type:** Fix
+**Scope:** Pages workflow
+
+**Summary:**
+Remove the `deploy_preview` job from the Pages workflow. Pull requests continue
+to run the `build` job, so dependency installation, type checking, and the
+production build remain verified.
+
+**Rationale:**
+A check that always fails trains readers to ignore all checks, which costs more
+than the preview was ever worth.
+
+**Bug Fix Context (if applicable):**
+The `github-pages` environment restricts deployments to `main`, and GitHub Pages
+serves a single site per repository, so `actions/deploy-pages` cannot produce a
+per-pull-request preview. The job had therefore failed on every pull request
+since it was added, including unrelated Dependabot pull requests. Removing it
+makes a red check mean something again.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 21:00] Commit Summary
 
 **Change Type:** Feature

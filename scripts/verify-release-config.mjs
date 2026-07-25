@@ -139,3 +139,18 @@ test("every dependabot ecosystem writes conventional commit messages", () => {
     assert.equal(update["commit-message"].prefix, "chore(deps)");
   }
 });
+
+const pagesWorkflow = parse(readFileSync(".github/workflows/pages.yml", "utf8"));
+
+test("no pull request job attempts a deployment that cannot succeed", () => {
+  assert.equal(pagesWorkflow.jobs.deploy_preview, undefined);
+});
+
+test("pull requests still build, so checks remain meaningful", () => {
+  assert.ok(pagesWorkflow.on.pull_request !== undefined);
+  assert.ok(pagesWorkflow.jobs.build !== undefined);
+});
+
+test("production still deploys from main", () => {
+  assert.match(pagesWorkflow.jobs.deploy.if, /refs\/heads\/main/);
+});
