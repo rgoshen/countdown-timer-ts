@@ -1,5 +1,29 @@
 # Change Summary
 
+## [2026-07-24 20:30] Commit Summary
+
+**Change Type:** Feature
+**Scope:** Release configuration
+
+**Summary:**
+Add `.releaserc.json` with the six-plugin release pipeline, an executable
+contract test asserting plugin order and options, and raise the pinned Node
+version to 22.23.1.
+
+**Rationale:**
+The `conventionalcommits` preset hides `docs`, `refactor`, `style`, `test`, and
+`chore` by default, which would have produced a changelog nearly empty of this
+repository's actual work, so an explicit type map assigns visible sections. The
+Node floor rose because the changelog and git plugins require 22.22.2 or later
+and the pinned 22.17.1 did not satisfy it.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 20:15] Commit Summary
 
 **Change Type:** Feature
