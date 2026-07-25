@@ -1,5 +1,36 @@
 # Change Summary
 
+## [2026-07-24 19:56] Commit Summary
+
+**Change Type:** Docs
+**Scope:** Automated release and changelog
+
+**Summary:**
+Record the design for deriving versions, tags, GitHub Releases, and
+`CHANGELOG.md` from Conventional Commits, including the plugin order, loop
+prevention, required workflow permissions, Dependabot message prefix, and the
+removal of the unachievable Pages preview deployment.
+
+**Rationale:**
+`semantic-release` was chosen over `release-please` and `changesets` because it
+already runs in a sibling repository, so both projects share one release model.
+Releasing is kept independent of deployment so that a documentation-only commit
+still deploys and a failed release never withholds a working build. Commit
+messages are validated at authorship rather than in continuous integration so
+an invalid message fails before it is recorded, when it is still cheap to fix.
+
+**Bug Fix Context (if applicable):**
+The Pages workflow defines a `deploy_preview` job that has failed on every pull
+request since it was added. The `github-pages` environment restricts
+deployments to `main`, and GitHub Pages serves a single site per repository, so
+per-pull-request previews are unreachable through `actions/deploy-pages`. The
+design removes the job so the remaining checks report the real state of a
+branch.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 17:15] Commit Summary
 
 **Change Type:** Docs
