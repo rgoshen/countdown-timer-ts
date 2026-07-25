@@ -1,5 +1,31 @@
 # Change Summary
 
+## [2026-07-24 21:00] Commit Summary
+
+**Change Type:** Feature
+**Scope:** Dependency update messages
+
+**Summary:**
+Add a Dependabot configuration that prefixes npm and GitHub Actions updates
+with `chore(deps)`, groups npm updates into a single pull request, and runs
+weekly.
+
+**Rationale:**
+Dependabot had no configuration and used default messages such as
+`Bump vite in the npm_and_yarn group`, which no convention parser recognizes
+and which the new commit hook cannot reach, because those commits are authored
+by GitHub rather than locally. The `chore` type keeps dependency bumps in
+history without asserting a user-facing change, so they do not cut releases on
+their own. Grouping limits the pull request volume that enabling version
+updates would otherwise create.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 20:45] Commit Summary
 
 **Change Type:** Feature

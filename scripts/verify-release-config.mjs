@@ -128,3 +128,14 @@ test("every action is pinned to a full commit SHA", () => {
     );
   }
 });
+
+const dependabot = parse(readFileSync(".github/dependabot.yml", "utf8"));
+
+test("every dependabot ecosystem writes conventional commit messages", () => {
+  const ecosystems = dependabot.updates.map((update) => update["package-ecosystem"]);
+  assert.deepEqual(ecosystems.sort(), ["github-actions", "npm"]);
+
+  for (const update of dependabot.updates) {
+    assert.equal(update["commit-message"].prefix, "chore(deps)");
+  }
+});
