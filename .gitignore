@@ -62,3 +62,6 @@ Temporary Items
 
 # Local Git worktrees
 .worktrees/
+
+# Local agent scratch (plans keep their own ledgers here)
+.superpowers/
