@@ -216,3 +216,17 @@ test("releases cannot run concurrently", () => {
   assert.equal(releaseWorkflow.concurrency.group, "release");
   assert.equal(releaseWorkflow.concurrency["cancel-in-progress"], false);
 });
+
+test("a pull request build cannot cancel the production deploy", () => {
+  // A static group name puts every branch and event in one bucket, so a
+  // pull request build cancels an in-flight deploy. Scope it per ref.
+  assert.notEqual(pagesWorkflow.concurrency.group, "pages");
+  assert.match(pagesWorkflow.concurrency.group, /github\.ref/);
+});
+
+test("only pull request builds cancel themselves", () => {
+  assert.match(
+    String(pagesWorkflow.concurrency["cancel-in-progress"]),
+    /github\.event_name == 'pull_request'/,
+  );
+});
