@@ -1,5 +1,28 @@
 # Change Summary
 
+## [2026-07-24 17:15] Commit Summary
+
+**Change Type:** Docs
+**Scope:** GHCR-backed local runtime
+
+**Summary:**
+Document first publication, public package visibility, latest-image startup,
+immutable commit rollback, logs, health waiting, response verification, and
+shutdown.
+
+**Rationale:**
+The repository configuration and the external package lifecycle complete at
+different times. Explicit first-publication instructions prevent a valid
+Compose file from being mistaken for an image that already exists in GHCR.
+
+**Bug Fix Context (if applicable):**
+The previous README contained no Docker Compose instructions and did not explain
+why the unpublished registry image cannot yet be started.
+
+**References:**
+- TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
+- Issue: Not applicable
+
 ## [2026-07-24 17:13] Commit Summary
 
 **Change Type:** Feature
