@@ -1,5 +1,37 @@
 # Change Summary
 
+## [2026-07-24 21:45] Commit Summary
+
+**Change Type:** Fix
+**Scope:** Release configuration
+
+**Summary:**
+Replace the silently-ignored `hidden` key with `effect: "hidden"` so that
+`style`, `test`, and `chore` commit types are correctly excluded from the
+changelog. Update the test filters to match the new key. Correct the README
+claim that the changelog overwrites hand-written changes — it actually prepends,
+so manual additions survive but become interleaved.
+
+**Rationale:**
+The `conventional-changelog-conventionalcommits@10.2.1` preset checks
+`entry.effect` and defaults to `"bump"`, so `"hidden": true` was silently
+ignored and those types rendered under an `undefined` section. The contract
+test passed against broken configuration because it filtered on the wrong key.
+The changelog prepends notes rather than rewriting, which is materially
+different from the documented behavior.
+
+**Bug Fix Context (if applicable):**
+The `hidden` key is a local invention, not part of the preset's type schema. The
+preset's own `isTypeEffect` function (source: `utils.js:51-53`) recognizes only
+the `effect` field and defaults to `"bump"` when unset. With `"hidden": true`,
+`'bump' === 'hidden'` is false, so the type is not hidden. The test asserted
+against `entry.hidden` instead of `entry.effect`, allowing it to pass without
+catching the misconfiguration.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 21:30] Commit Summary
 
 **Change Type:** Docs

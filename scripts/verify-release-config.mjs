@@ -66,7 +66,7 @@ test("the preset is declared once at the root so both plugins inherit it", () =>
 test("documentation and refactor commits are visible in the changelog", () => {
   const visible = new Map(
     releaseConfig.presetConfig.types
-      .filter((entry) => !entry.hidden)
+      .filter((entry) => entry.effect !== "hidden")
       .map((entry) => [entry.type, entry.section]),
   );
   for (const type of [
@@ -83,7 +83,7 @@ test("documentation and refactor commits are visible in the changelog", () => {
 
   const hidden = new Set(
     releaseConfig.presetConfig.types
-      .filter((entry) => entry.hidden)
+      .filter((entry) => entry.effect === "hidden")
       .map((entry) => entry.type),
   );
   for (const type of ["style", "test", "chore"]) {
@@ -132,7 +132,9 @@ test("every action is pinned to a full commit SHA", () => {
 const dependabot = parse(readFileSync(".github/dependabot.yml", "utf8"));
 
 test("every dependabot ecosystem writes conventional commit messages", () => {
-  const ecosystems = dependabot.updates.map((update) => update["package-ecosystem"]);
+  const ecosystems = dependabot.updates.map(
+    (update) => update["package-ecosystem"],
+  );
   assert.deepEqual(ecosystems.sort(), ["github-actions", "npm"]);
 
   for (const update of dependabot.updates) {
@@ -140,7 +142,9 @@ test("every dependabot ecosystem writes conventional commit messages", () => {
   }
 });
 
-const pagesWorkflow = parse(readFileSync(".github/workflows/pages.yml", "utf8"));
+const pagesWorkflow = parse(
+  readFileSync(".github/workflows/pages.yml", "utf8"),
+);
 
 test("no pull request job attempts a deployment that cannot succeed", () => {
   assert.equal(pagesWorkflow.jobs.deploy_preview, undefined);

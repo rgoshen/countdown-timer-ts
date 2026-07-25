@@ -10,9 +10,9 @@
       { "type": "docs", "section": "Documentation" },
       { "type": "build", "section": "Build System" },
       { "type": "ci", "section": "Continuous Integration" },
-      { "type": "style", "hidden": true },
-      { "type": "test", "hidden": true },
-      { "type": "chore", "hidden": true }
+      { "type": "style", "effect": "hidden" },
+      { "type": "test", "effect": "hidden" },
+      { "type": "chore", "effect": "hidden" }
     ]
   },
   "plugins": [

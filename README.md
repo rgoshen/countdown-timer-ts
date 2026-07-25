@@ -104,8 +104,10 @@ Run that from `main`. On any other branch it reports that semantic-release is
 configured to publish only from `main` and computes no version — which is the
 branch restriction working, not an error.
 
-`CHANGELOG.md` is generated. Do not edit it by hand; the next release
-overwrites hand-written changes.
+`CHANGELOG.md` is generated. Each release prepends its notes above the
+existing content rather than rewriting the file, so hand-written additions
+survive but end up interleaved with generated entries. Treat it as generated
+and record rationale in `SUMMARY.md` instead.
 
 Deployment is independent of releasing. GitHub Pages and the GHCR image publish
 on every push to `main`, whether or not that push produces a release.
