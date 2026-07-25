@@ -1,5 +1,26 @@
 # Change Summary
 
+## [2026-07-24 21:40] Commit Summary
+
+**Change Type:** Docs
+**Scope:** Automated release and changelog
+
+**Summary:**
+Record in the plan that a dry run reports no version on any branch other than
+`main`, matching the note already published in the README.
+
+**Rationale:**
+The plan named two possible dry-run outcomes and omitted the one a contributor
+actually sees on a feature branch, which reads as a failure rather than as the
+branch restriction working.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+- TODO.md: 2026-07-24 Automated Release and Changelog
+- Issue: Not applicable
+
 ## [2026-07-24 22:00] Commit Summary
 
 **Change Type:** Fix

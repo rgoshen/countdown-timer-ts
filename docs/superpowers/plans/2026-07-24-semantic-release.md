@@ -749,6 +749,10 @@ To preview what the next release would be without changing anything:
 GITHUB_TOKEN=$(gh auth token) npx semantic-release --dry-run
 ```
 
+Run that from `main`. On any other branch it reports that semantic-release is
+configured to publish only from `main` and computes no version — which is the
+branch restriction working, not an error.
+
 `CHANGELOG.md` is generated. Do not edit it by hand; the next release
 overwrites hand-written changes.
 
