@@ -1,7 +1,8 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { act, render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import App from "../App";
+import { ThemeProvider } from "../theme/ThemeProvider";
 
 describe("App integration", () => {
   beforeEach(() => {
@@ -11,7 +12,11 @@ describe("App integration", () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it("validates and counts down; reset clears persistence and UI", async () => {
-    render(<App />);
+    render(
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>,
+    );
     const date = screen.getByLabelText(/select date/i) as HTMLInputElement;
     const h = screen.getByLabelText(/hours/i) as HTMLSelectElement;
     const m = screen.getByLabelText(/minutes/i) as HTMLSelectElement;
@@ -20,7 +25,7 @@ describe("App integration", () => {
     fireEvent.change(date, { target: { value: "2029-12-31" } });
     fireEvent.change(h, { target: { value: "23" } });
     fireEvent.change(m, { target: { value: "59" } });
-    expect(await screen.findByRole("alert")).toHaveTextContent(/future date/);
+    expect(screen.getByRole("alert")).toHaveTextContent(/future date/);
 
     // Valid future
     fireEvent.change(date, { target: { value: "2030-01-01" } });
@@ -30,12 +35,13 @@ describe("App integration", () => {
     expect(screen.getByText("Seconds")).toBeInTheDocument();
 
     // Finish after 61s
-    vi.advanceTimersByTime(61000);
-    await Promise.resolve();
-    expect(await screen.findByText(/Time’s up!/)).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(61000);
+    });
+    expect(screen.getByText(/Time’s up!/)).toBeInTheDocument();
 
     // Reset clears
     fireEvent.click(screen.getByText(/reset/i));
-    expect(localStorage.getItem("countdown-target")).toBeNull();
+    expect(window.localStorage.getItem("countdown-target")).toBeNull();
   });
 });

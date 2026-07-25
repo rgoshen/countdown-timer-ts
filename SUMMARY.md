@@ -1,5 +1,30 @@
 # Change Summary
 
+## [2026-07-24 16:44] Commit Summary
+
+**Change Type:** Fix
+**Scope:** Clean CI baseline
+
+**Summary:**
+Declare the flat ESLint configuration dependencies, resolve the rules they
+activate, make browser storage deterministic in Node 26 tests, and stabilize
+the countdown change callback.
+
+**Rationale:**
+A clean installation must load the configured lint rules and exercise the same
+provider boundary used in production. Separating the theme context preserves
+Fast Refresh, while a stable picker callback prevents elapsed countdown values
+from being revalidated and cleared.
+
+**Bug Fix Context (if applicable):**
+`npm run ci` failed first on missing ESLint imports, then on latent lint errors
+and a Node 26 storage collision. The App integration test also exposed a
+feedback loop that cleared the target before rendering the finished state.
+
+**References:**
+- TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
+- Issue: Not applicable
+
 ## [2026-07-24 16:32] Commit Summary
 
 **Change Type:** Docs

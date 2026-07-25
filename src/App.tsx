@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import "./App.css";
 import ThemeToggle from "./components/ThemeToggle";
 import CountdownDisplay from "./components/CountdownDisplay";
@@ -10,12 +10,22 @@ import { isFutureDate, isValidDateString, toInputLocal } from "./lib/time";
 export default function App() {
   const TARGET_KEY = "countdown-target";
   const [targetValue, setTargetValue] = useState<string>(() => {
-    try { return localStorage.getItem(TARGET_KEY) ?? ""; } catch { return ""; }
+    try {
+      return window.localStorage.getItem(TARGET_KEY) ?? "";
+    } catch {
+      return "";
+    }
   });
   const [error, setError] = useState<string>("");
   const [pickerNonce, setPickerNonce] = useState(0);
   const [timeFormat, setTimeFormat] = useState<"24h" | "12h">(
-    () => (localStorage.getItem("time-format") === "12h" ? "12h" : "24h")
+    () => {
+      try {
+        return window.localStorage.getItem("time-format") === "12h" ? "12h" : "24h";
+      } catch {
+        return "24h";
+      }
+    }
   );
 
   const active = Boolean(targetValue) && !error;
@@ -28,7 +38,7 @@ export default function App() {
 
   const { timeLeft, finished } = useCountdown(targetMs, nowMs);
 
-  const handleChange = (value: string) => {
+  const handleChange = useCallback((value: string) => {
     if (!isValidDateString(value)) {
       setError("Please enter a valid date and time.");
       setTargetValue("");
@@ -41,13 +51,15 @@ export default function App() {
     }
     setError("");
     setTargetValue(value);
-  };
+  }, []);
 
   useEffect(() => {
     try {
-      if (targetValue) localStorage.setItem(TARGET_KEY, targetValue);
-      else localStorage.removeItem(TARGET_KEY);
-    } catch {}
+      if (targetValue) window.localStorage.setItem(TARGET_KEY, targetValue);
+      else window.localStorage.removeItem(TARGET_KEY);
+    } catch {
+      // Persistence is optional when storage is unavailable.
+    }
   }, [targetValue]);
 
   useEffect(() => {
@@ -60,7 +72,11 @@ export default function App() {
   const reset = () => {
     setTargetValue("");
     setError("");
-    try { localStorage.removeItem(TARGET_KEY); } catch {}
+    try {
+      window.localStorage.removeItem(TARGET_KEY);
+    } catch {
+      // State still resets when persistence is unavailable.
+    }
     setPickerNonce(n => n + 1); // force-remount picker to clear internal UI
   };
 
@@ -81,7 +97,11 @@ export default function App() {
           format={timeFormat}
           onFormatChange={(f) => {
             setTimeFormat(f);
-            try { localStorage.setItem("time-format", f); } catch {}
+            try {
+              window.localStorage.setItem("time-format", f);
+            } catch {
+              // The selected format remains active for this session.
+            }
           }}
         />
         <button className="secondary" onClick={reset} disabled={!targetValue}>Reset</button>
