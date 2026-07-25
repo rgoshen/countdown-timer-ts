@@ -58,8 +58,8 @@ Both the analyzer and the notes generator use the `conventionalcommits` preset
 rather than the Angular default. The preset alone is not sufficient: it hides
 `docs`, `refactor`, `style`, `test`, and `chore` by default, so the
 configuration supplies an explicit `presetConfig.types` map that assigns a
-visible section to `docs`, `refactor`, `build`, and `perf`, and leaves `style`,
-`test`, and `chore` hidden.
+visible section to `docs`, `refactor`, `build`, `ci`, and `perf`, and leaves
+`style`, `test`, and `chore` hidden.
 
 Section visibility and release type are independent. `refactor`, `docs`, and
 `build` appear in a changelog without triggering a release on their own; they
@@ -75,6 +75,16 @@ Two independent mechanisms prevent a release from triggering another release.
 The release commit message carries `[skip ci]`, and commits pushed with
 `GITHUB_TOKEN` do not start new workflow runs. Either alone is sufficient;
 both are retained because each protects against a different future change.
+
+## Runtime Floor
+
+`@semantic-release/changelog` and `@semantic-release/git` declare an
+`engines.node` requirement of `^22.22.2 || >=24.15`. The repository pins
+`v22.17.1` in `.nvmrc`, which does not satisfy it, so the pin rises to the
+current head of the 22 line. The release workflow reads its Node version from
+`.nvmrc` rather than hardcoding one, so the local and continuous integration
+runtimes cannot drift apart. The Pages workflow keeps its existing Node
+version; it does not run `semantic-release` and is unaffected.
 
 ## Permissions
 
