@@ -92,6 +92,104 @@ test("documentation and refactor commits are visible in the changelog", () => {
   }
 });
 
+test("dependency bump commits are visible in the changelog under their own section", () => {
+  const deps = releaseConfig.presetConfig.types.filter(
+    (entry) => entry.type === "chore" && entry.scope,
+  );
+  assert.deepEqual(
+    new Set(deps.map((entry) => entry.scope)),
+    new Set(["deps", "deps-dev"]),
+  );
+  for (const entry of deps) {
+    assert.notEqual(entry.hidden, true);
+    assert.equal(entry.section, "Dependencies");
+  }
+});
+
+test("dependency bump commits are configured to release a patch", () => {
+  assert.deepEqual(
+    pluginOptions(findPlugin("@semantic-release/commit-analyzer")).releaseRules,
+    [
+      { type: "chore", scope: "deps", release: "patch" },
+      { type: "chore", scope: "deps-dev", release: "patch" },
+    ],
+  );
+});
+
+test("a dependency-only commit set recommends a patch release", async () => {
+  const { analyzeCommits } = await import("@semantic-release/commit-analyzer");
+  const mk = (h, message) => ({
+    hash: h,
+    message,
+    subject: message.split("\n")[0],
+    body: "",
+    committerDate: "2026-08-05",
+    author: { name: "a" },
+    committer: { name: "a" },
+    tree: { long: h },
+  });
+
+  const releaseType = await analyzeCommits(
+    {
+      preset: releaseConfig.preset,
+      presetConfig: releaseConfig.presetConfig,
+      releaseRules: pluginOptions(
+        findPlugin("@semantic-release/commit-analyzer"),
+      ).releaseRules,
+    },
+    {
+      commits: [
+        mk("5".repeat(40), "chore(deps): bump rollup from 4.46.2 to 4.62.4"),
+        mk(
+          "6".repeat(40),
+          "chore(deps-dev): bump @babel/core from 7.28.0 to 7.29.7",
+        ),
+      ],
+      logger: { log() {} },
+      cwd: process.cwd(),
+    },
+  );
+
+  assert.equal(releaseType, "patch");
+});
+
+test("the installed preset renders a visible Dependencies section for dependency bumps", async () => {
+  const { generateNotes } = await import(
+    "@semantic-release/release-notes-generator"
+  );
+  const mk = (h, message) => ({
+    hash: h,
+    message,
+    subject: message.split("\n")[0],
+    body: "",
+    committerDate: "2026-08-05",
+    author: { name: "a" },
+    committer: { name: "a" },
+    tree: { long: h },
+  });
+
+  const notes = await generateNotes(
+    { preset: releaseConfig.preset, presetConfig: releaseConfig.presetConfig },
+    {
+      commits: [
+        mk("7".repeat(40), "chore(deps): bump rollup from 4.46.2 to 4.62.4"),
+        mk("8".repeat(40), "chore: a hidden unscoped chore"),
+      ],
+      lastRelease: {},
+      nextRelease: { version: "1.0.2", gitTag: "v1.0.2", channel: null },
+      options: {
+        repositoryUrl: "https://github.com/rgoshen/countdown-timer-ts",
+      },
+      cwd: process.cwd(),
+      env: process.env,
+    },
+  );
+
+  assert.match(notes, /### Dependencies/);
+  assert.match(notes, /bump rollup from 4\.46\.2 to 4\.62\.4/);
+  assert.doesNotMatch(notes, /a hidden unscoped chore/);
+});
+
 test("releases run only on pushes to main", () => {
   assert.deepEqual(releaseWorkflow.on.push.branches, ["main"]);
 });
