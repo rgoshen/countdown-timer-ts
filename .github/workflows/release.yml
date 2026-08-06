@@ -95,13 +95,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # publish-container.yml is the sole writer of `latest`; it already
+      # runs unconditionally on every push to main. Writing `latest` here
+      # too would race an unsynchronized, independently-timed workflow run
+      # for the same mutable tag.
       - name: Extract image metadata
         id: meta
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest
             type=raw,value=${{ needs.release.outputs.version }}
 
       - name: Build and push image

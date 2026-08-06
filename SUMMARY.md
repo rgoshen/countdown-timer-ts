@@ -1,5 +1,38 @@
 # Change Summary
 
+## [2026-08-05 18:42] Commit Summary
+
+**Change Type:** Fix
+**Scope:** Release configuration, GHCR publishing
+
+**Summary:**
+Stop `publish-versioned-image` from also writing the `latest` tag; it now
+publishes only the version tag.
+
+**Rationale:**
+CodeRabbit review on PR #29 flagged that `publish-versioned-image` and
+`publish-container.yml` both write `latest` from separate, unsynchronized
+workflow runs triggered by the same push — verified valid against current
+code, since neither run coordinates with or waits on the other.
+`publish-container.yml` already runs unconditionally on every push to
+`main`, so making it the sole writer of `latest` removes the race with a
+one-line change instead of adding cross-workflow coordination.
+
+**Bug Fix Context (if applicable):**
+Both workflows independently included `type=raw,value=latest` in their
+`docker/metadata-action` tag list, with no shared concurrency group and no
+`needs`/ordering relationship between the two workflow files. Whichever
+run's `Build and push image` step finished last would silently determine
+the final `latest` digest. Today's builds happen to produce equivalent
+content (a release commit never touches `src/`), so this wasn't yet visibly
+broken, but multi-arch builds aren't guaranteed reproducible run-to-run, so
+the two tags could drift without warning.
+
+**References:**
+
+- TODO.md: 2026-08-05 Versioned Release Images and Dependency Auto-Release
+- Issue: PR #29 review comment (CodeRabbit)
+
 ## [2026-08-05 18:32] Commit Summary
 
 **Change Type:** Feature

@@ -109,7 +109,7 @@ test("the versioned image job only runs after a real release", () => {
   assert.equal(job.if, "needs.release.outputs.released == 'true'");
 });
 
-test("the versioned image job checks out the release tag and publishes a pinned multi-platform image tagged latest and by version", () => {
+test("the versioned image job checks out the release tag and publishes a pinned multi-platform image tagged only by version", () => {
   const workflow = parse(readFileSync(".github/workflows/release.yml", "utf8"));
   const job = workflow.jobs["publish-versioned-image"];
   const steps = new Map(job.steps.map((step) => [step.name, step]));
@@ -142,12 +142,12 @@ test("the versioned image job checks out the release tag and publishes a pinned 
     assert.match(steps.get(name).uses, new RegExp(`^${action}@[0-9a-f]{40}$`));
   }
 
+  // Only the version tag here: publish-container.yml is the sole writer of
+  // `latest`, since it already runs unconditionally on every push to main.
+  // Writing `latest` from this job too would race that unsynchronized run.
   assert.deepEqual(
     steps.get("Extract image metadata").with.tags.trim().split("\n"),
-    [
-      "type=raw,value=latest",
-      "type=raw,value=${{ needs.release.outputs.version }}",
-    ],
+    ["type=raw,value=${{ needs.release.outputs.version }}"],
   );
   assert.equal(
     steps.get("Build and push image").with.platforms,
