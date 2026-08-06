@@ -1,3 +1,24 @@
+## [1.1.0](https://github.com/rgoshen/countdown-timer-ts/compare/v1.0.1...v1.1.0) (2026-08-06)
+
+### Features
+
+* **release:** release on dependency bumps and publish versioned images ([248d594](https://github.com/rgoshen/countdown-timer-ts/commit/248d5941facf9510905c55dc43d250229af12e62))
+
+### Bug Fixes
+
+* **release:** stop racing publish-container.yml for the latest tag ([1555bdb](https://github.com/rgoshen/countdown-timer-ts/commit/1555bdb4ca4537a74ad37a31eb35313db3c3ba26))
+
+### Dependencies
+
+* **deps-dev:** bump @babel/core from 7.28.0 to 7.29.7 ([662aee2](https://github.com/rgoshen/countdown-timer-ts/commit/662aee227419627e136e8966a2708df31b667acf))
+* **deps-dev:** bump fast-uri from 3.1.4 to 3.1.5 ([9b9abb0](https://github.com/rgoshen/countdown-timer-ts/commit/9b9abb0cae595e290e485a4d32e3f45550e66ac1))
+* **deps-dev:** bump flatted from 3.3.3 to 3.4.4 ([56be23a](https://github.com/rgoshen/countdown-timer-ts/commit/56be23af9f4f216f9410908e57fc50c9bd03f271))
+* **deps-dev:** bump lodash from 4.17.21 to 4.18.1 ([5bb45a5](https://github.com/rgoshen/countdown-timer-ts/commit/5bb45a516adb9fe000ceb0bc8c700c5437630ef9))
+* **deps:** bump postcss from 8.5.6 to 8.5.25 ([dd15609](https://github.com/rgoshen/countdown-timer-ts/commit/dd15609dc2c2aa18e580285b51f3c0ecc84d86e2))
+* **deps:** bump rollup from 4.46.2 to 4.62.4 ([93aeff1](https://github.com/rgoshen/countdown-timer-ts/commit/93aeff121f5100e5dd1098b5cae28040d6b14f23))
+* **deps:** bump undici from 6.27.0 to 7.29.0 ([9c997d8](https://github.com/rgoshen/countdown-timer-ts/commit/9c997d8a58e74dec4320bd8a80efc6c313f3078c))
+* **deps:** bump ws from 8.18.3 to 8.21.2 ([f02d5ed](https://github.com/rgoshen/countdown-timer-ts/commit/f02d5ed0d9816162287041105eec8a9c8e459ab0))
+
 ## [1.0.1](https://github.com/rgoshen/countdown-timer-ts/compare/v1.0.0...v1.0.1) (2026-07-25)
 
 ### Bug Fixes
