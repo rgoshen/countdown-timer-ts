@@ -1,5 +1,77 @@
 # Change Summary
 
+## [2026-08-05 18:42] Commit Summary
+
+**Change Type:** Fix
+**Scope:** Release configuration, GHCR publishing
+
+**Summary:**
+Stop `publish-versioned-image` from also writing the `latest` tag; it now
+publishes only the version tag.
+
+**Rationale:**
+CodeRabbit review on PR #29 flagged that `publish-versioned-image` and
+`publish-container.yml` both write `latest` from separate, unsynchronized
+workflow runs triggered by the same push — verified valid against current
+code, since neither run coordinates with or waits on the other.
+`publish-container.yml` already runs unconditionally on every push to
+`main`, so making it the sole writer of `latest` removes the race with a
+one-line change instead of adding cross-workflow coordination.
+
+**Bug Fix Context (if applicable):**
+Both workflows independently included `type=raw,value=latest` in their
+`docker/metadata-action` tag list, with no shared concurrency group and no
+`needs`/ordering relationship between the two workflow files. Whichever
+run's `Build and push image` step finished last would silently determine
+the final `latest` digest. Today's builds happen to produce equivalent
+content (a release commit never touches `src/`), so this wasn't yet visibly
+broken, but multi-arch builds aren't guaranteed reproducible run-to-run, so
+the two tags could drift without warning.
+
+**References:**
+
+- TODO.md: 2026-08-05 Versioned Release Images and Dependency Auto-Release
+- Issue: PR #29 review comment (CodeRabbit)
+
+## [2026-08-05 18:32] Commit Summary
+
+**Change Type:** Feature
+**Scope:** Release configuration, GHCR publishing
+
+**Summary:**
+Dependency-only commits (`chore(deps)`/`chore(deps-dev)`) now trigger their
+own patch release and show up in the changelog under a "Dependencies"
+section instead of staying silently hidden. Added a `publish-versioned-image`
+job to `release.yml` that runs immediately after a release, publishing one
+GHCR image tagged with both `latest` and the release version (e.g. `1.0.2`),
+so a specific release can be pinned instead of only ever running whatever
+`latest` currently points to.
+
+**Rationale:**
+Merging the 7 pending Dependabot PRs (#22-#28) produced no release at all,
+because plain `chore` commits don't bump a version under the default
+`conventionalcommits` rules — confirmed by checking why none of today's 7
+merges cut a release. Versioned images were considered and rejected as
+out-of-scope at first (the existing `publish-container.yml` + `latest`-only
+tag already satisfies "keep the image updated" literally, and
+`docker-compose.yml` intentionally pulls `:latest`), but the user clarified
+that images should be pinnable by version, not `latest`-only, so a version
+tag was added instead. The versioned-image publish had to live inside
+`release.yml` as a same-run follow-up job rather than as a new trigger on
+`publish-container.yml`, because GitHub Actions never lets a workflow run
+authenticated with the default `GITHUB_TOKEN` start another workflow run —
+confirmed against GitHub's own documentation and empirically, by checking
+that `publish-container.yml` never ran for either past release commit
+(`8e63f57`, `461bb8e`). `publish-container.yml` itself is unchanged.
+
+**Bug Fix Context (if applicable):**
+Not applicable.
+
+**References:**
+
+- TODO.md: 2026-08-05 Versioned Release Images and Dependency Auto-Release
+- Issue: Not applicable
+
 ## [2026-07-24 22:23] Commit Summary
 
 **Change Type:** Fix
@@ -26,6 +98,7 @@ application changes. Per-ref grouping makes a pull request build unable to
 reach the group a production deploy runs in.
 
 **References:**
+
 - TODO.md: 2026-07-24 Pages Concurrency Cancels Production Deploys
 - Issue: Not applicable
 
@@ -47,6 +120,7 @@ branch restriction working.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -75,8 +149,8 @@ output, which is the only way this class of bug is caught before a release.
 **Bug Fix Context (if applicable):**
 `@semantic-release/release-notes-generator@14.1.1` depends on
 `conventional-changelog-writer@^8`, which renders sections using Handlebars
-*string* templates. `conventional-changelog-conventionalcommits@9` and later
-switched to Handlebars *function* templates, and also renamed the per-type
+_string_ templates. `conventional-changelog-conventionalcommits@9` and later
+switched to Handlebars _function_ templates, and also renamed the per-type
 visibility flag from `hidden` to `effect`. With `conventionalcommits@10.2.1`
 installed against writer v8, the mismatched template format meant every
 section, commit bullet, and BREAKING CHANGES block rendered as nothing — the
@@ -90,6 +164,7 @@ fix, hidden chore, and a breaking-change feat): `### Features`,
 bullets, and the hidden chore did not appear anywhere in the output.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -122,6 +197,7 @@ against `entry.hidden` instead of `entry.effect`, allowing it to pass without
 catching the misconfiguration.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -144,6 +220,7 @@ discoverable by reading `.releaserc.json`.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -169,6 +246,7 @@ since it was added, including unrelated Dependabot pull requests. Removing it
 makes a red check mean something again.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -195,6 +273,7 @@ updates would otherwise create.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -218,6 +297,7 @@ and a shallow clone would make every release look like the first.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -242,6 +322,7 @@ and the pinned 22.17.1 did not satisfy it.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -266,6 +347,7 @@ push when correcting it requires an interactive rebase.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -290,6 +372,7 @@ removes roughly twenty-four duplicated lines that could otherwise drift apart.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -321,6 +404,7 @@ design removes the job so the remaining checks report the real state of a
 branch.
 
 **References:**
+
 - TODO.md: 2026-07-24 Automated Release and Changelog
 - Issue: Not applicable
 
@@ -344,6 +428,7 @@ The previous README contained no Docker Compose instructions and did not explain
 why the unpublished registry image cannot yet be started.
 
 **References:**
+
 - TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
 - Issue: Not applicable
 
@@ -367,6 +452,7 @@ The repository previously had no Compose configuration, causing
 `docker compose up` to fail before resolving any service.
 
 **References:**
+
 - TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
 - Issue: Not applicable
 
@@ -392,6 +478,7 @@ and a Node 26 storage collision. The App integration test also exposed a
 feedback loop that cleared the target before rendering the finished state.
 
 **References:**
+
 - TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
 - Issue: Not applicable
 
@@ -413,6 +500,7 @@ The initial plan would have tested workflow text rather than its parsed
 behavior.
 
 **References:**
+
 - TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
 - Issue: Not applicable
 
@@ -435,6 +523,7 @@ The previous plan never created `compose.yaml`, causing Docker Compose to fail
 with `no configuration file provided: not found`.
 
 **References:**
+
 - TODO.md: 2026-07-24 GHCR-backed Docker Compose Runtime
 - Issue: Not applicable
 
@@ -455,6 +544,7 @@ contents from appearing as repository changes during subagent execution.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Local Docker Compose Runtime
 - Issue: Not applicable
 
@@ -476,6 +566,7 @@ begins.
 Not applicable.
 
 **References:**
+
 - TODO.md: 2026-07-24 Local Docker Compose Runtime
 - Issue: Not applicable
 
@@ -496,6 +587,7 @@ representative of production.
 **Bug Fix Context (if applicable):**  
 Not applicable.
 
-**References:**  
+**References:**
+
 - TODO.md: 2026-07-24 Local Docker Compose Runtime
 - Issue: Not applicable

@@ -78,3 +78,51 @@ The mutable `latest` tag favors convenience over reproducibility, so each
 publication also retains a commit-specific tag for rollback. GHCR creates the
 first package as private; anonymous Compose startup becomes available only
 after the first `main` publication and a one-time visibility change to public.
+
+## [2026-08-05] Feature: Versioned Release Images and Dependency Auto-Release
+
+**Objective:**
+Make dependency-only commits (`chore(deps)`/`chore(deps-dev)`) trigger their
+own patch release like any other change, and publish a version-tagged GHCR
+image alongside `latest` for every release, so a specific release can be
+pinned instead of only ever running whatever `latest` currently points to.
+
+**Approach:**
+Add `releaseRules` to the `commit-analyzer` plugin so `chore(deps)` and
+`chore(deps-dev)` commits bump patch. Custom rules are checked first and fall
+through to the existing `conventionalcommits` preset for everything else
+(confirmed against the plugin's own documentation), so `feat`/`fix` bump
+behavior is unaffected. Surface both scopes in the changelog under a visible
+"Dependencies" section instead of hiding them; plain unscoped `chore:` commits
+stay hidden. Add a `publish-versioned-image` job to `release.yml` that runs in
+the same workflow run immediately after the `release` job, gated on whether
+`package.json`'s version actually changed (semantic-release exits
+successfully whether or not it released, so the job diffs the version before
+and after). It checks out the release tag itself (`v<version>`, immutable
+once created, sidestepping any race with a later push to `main`) and builds
+one image carrying both `:latest` and `:<version>` tags together, so both
+always come from the identical build. This has to live inside `release.yml`
+rather than as a new trigger on `publish-container.yml`, because GitHub
+Actions never lets a workflow run authenticated with the default
+`GITHUB_TOKEN` start another workflow run (confirmed against GitHub's docs) —
+no push, tag, or Release created by `npx semantic-release` can trigger a
+second workflow here, `[skip ci]` or not, without a personal access token
+this repo doesn't have. `publish-container.yml` itself is untouched and keeps
+publishing `latest`/`sha-*` on every push to `main`.
+
+**Tests:**
+Extend `scripts/verify-release-config.mjs` with an `analyzeCommits`-based test
+proving `chore(deps)`/`chore(deps-dev)` commits alone now recommend a patch
+release, and a `generateNotes`-based test proving they render under a visible
+"Dependencies" heading while a plain `chore:` commit stays hidden. Extend
+`scripts/verify-container-config.mjs` to assert the new job's trigger
+condition, permissions, tag list, and that its actions stay SHA-pinned,
+matching the existing pattern already asserted for `publish-container.yml`.
+
+**Risks & Tradeoffs:**
+Every dependency-only merge now produces its own release, tag, GitHub
+Release, and image build instead of batching silently until the next real
+change — more releases and more GHCR build minutes for what's often a
+one-line lockfile bump. The effect is retroactive as soon as this merges: the
+7 dependency commits already on `main` since v1.0.1 become part of the very
+next release.

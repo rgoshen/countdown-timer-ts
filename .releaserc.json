@@ -11,13 +11,23 @@
       { "type": "docs", "section": "Documentation" },
       { "type": "build", "section": "Build System" },
       { "type": "ci", "section": "Continuous Integration" },
+      { "type": "chore", "scope": "deps", "section": "Dependencies" },
+      { "type": "chore", "scope": "deps-dev", "section": "Dependencies" },
       { "type": "style", "hidden": true },
       { "type": "test", "hidden": true },
       { "type": "chore", "hidden": true }
     ]
   },
   "plugins": [
-    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          { "type": "chore", "scope": "deps", "release": "patch" },
+          { "type": "chore", "scope": "deps-dev", "release": "patch" }
+        ]
+      }
+    ],
     "@semantic-release/release-notes-generator",
     ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
     ["@semantic-release/npm", { "npmPublish": false }],
