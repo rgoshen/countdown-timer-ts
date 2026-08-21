@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/rgoshen/countdown-timer-ts/compare/v1.1.0...v1.1.1) (2026-08-21)
+
+### Bug Fixes
+
+* update app port from 8080 to 8085 in compose.yaml ([a711487](https://github.com/rgoshen/countdown-timer-ts/commit/a71148745a3a52ef24ff77f1ab38f05f43296d75))
+
 ## [1.1.0](https://github.com/rgoshen/countdown-timer-ts/compare/v1.0.1...v1.1.0) (2026-08-06)
 
 ### Features
